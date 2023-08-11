@@ -400,10 +400,25 @@ void UpdateRoutine(bool isMoving)
 
 void SendAllKinematicData()
 {
-  unsigned long dataStart = (CurrentXPos << 48) | (CurrentYPos << 32) | (CurrentZPos << 16) | (CurrentXVel << 8) | CurrentYVel;
-  Serial.write(dataStart);
+  unsigned long time = micros();
+
+  Serial.write(time >> 24);
+  Serial.write(time >> 16);
+  Serial.write(time >> 8);
+  Serial.write(time);
+
+  Serial.write(CurrentXPos >> 8);
+  Serial.write(CurrentXPos);
+
+  Serial.write(CurrentYPos >> 8); 
+  Serial.write(CurrentYPos);
+
+  Serial.write(CurrentZPos >> 8);
+  Serial.write(CurrentZPos); 
+
+  Serial.write(CurrentXVel);
+  Serial.write(CurrentYVel);
   Serial.write(CurrentZVel);
-  Serial.write(micros());
   /*
   Serial.print(CurrentXPos);
   Serial.print(' ');
@@ -467,7 +482,9 @@ int loopCount = 0;
 void loop(){
   UpdateRoutine(UpdatePosition());
   loopCount++;
+
   //SendPartKinematicData(loopCount);
+  //Serial.println((uint32_t)micros());
 
   if(micros() - sendIntervalStart >= sendInterval && RoutineState != -2)
   {
