@@ -35,6 +35,13 @@ int8_t CurrentXVel;
 int8_t CurrentYVel;
 int8_t CurrentZVel;
 
+short SendXPos;
+short SendYPos;
+short SendZPos;
+int8_t SendXVel;
+int8_t SendYVel;
+int8_t SendZVel;
+
 const byte DataStart = 255;
 
 //Boundaries
@@ -47,7 +54,7 @@ short RoutineIteration = 0;
 const short RoutineCount = 1;
 
 long sendIntervalStart;
-const long sendInterval = 5;
+const long sendInterval = 1500;
 
 void Pulse(int StepPin, int microDelay = 250)
 {
@@ -391,12 +398,13 @@ void UpdateRoutine(bool isMoving)
   }
 }
 
-void SendKinematicData()
+void SendAllKinematicData()
 {
-  //long dataStart = (DataStart << 56) | (CurrentXPos << 40) | (CurrentYPos << 24) | (CurrentZPos << 8) | (CurrentXVel << 8);
-  //Serial.write(dataStart);
-  //Serial.write(CurrentYVel);
-  //Serial.write(CurrentZVel);
+  unsigned long dataStart = (CurrentXPos << 48) | (CurrentYPos << 32) | (CurrentZPos << 16) | (CurrentXVel << 8) | CurrentYVel;
+  Serial.write(dataStart);
+  Serial.write(CurrentZVel);
+  Serial.write(micros());
+  /*
   Serial.print(CurrentXPos);
   Serial.print(' ');
   Serial.print(CurrentYPos);
@@ -409,6 +417,28 @@ void SendKinematicData()
   Serial.print(' ');
   Serial.println(CurrentZVel);
   Serial.print(' ');
+  */
+}
+
+void SendPartKinematicData(int loopCount)
+{
+  if(RoutineState == -2) return;
+  switch(loopCount)
+  {
+    case 1:
+      SendZPos = CurrentZPos;
+      SendXVel = CurrentXVel;
+      SendYVel = CurrentYVel;
+      SendZVel = CurrentZVel;
+      Serial.write((CurrentXPos << 16) | CurrentYPos);
+      break;
+    case 2:
+      Serial.write((CurrentZPos << 16) | (SendXVel << 8) | SendYVel);
+      Serial.write(SendZVel);
+      break;
+    default:
+      break;
+  }
 }
 
 void setup() {
@@ -429,14 +459,22 @@ void setup() {
 
   ResetMotors(false, false, true);
 
-  sendIntervalStart = millis();
+  sendIntervalStart = micros();
 }
+
+int loopCount = 0;
+
 void loop(){
   UpdateRoutine(UpdatePosition());
+  loopCount++;
+  //SendPartKinematicData(loopCount);
 
-  if(millis() - sendIntervalStart >= sendInterval && RoutineState != -2)
+  if(micros() - sendIntervalStart >= sendInterval && RoutineState != -2)
   {
-    SendKinematicData();
-    sendIntervalStart = millis();
+    SendAllKinematicData();
+    //Serial.println(micros() - sendIntervalStart);
+    //Serial.println(loopCount);
+    loopCount = 0;
+    sendIntervalStart = micros();
   }
 }
