@@ -30,7 +30,7 @@ namespace DataCollector
     public static class KinematicDataCollector
     {
         static SerialPort MotorSerialPort = new SerialPort("COM3", 115200, Parity.None, 8, StopBits.One);
-        static Queue<byte> RecievedKinematicData = new Queue<byte>();
+        static Queue<byte> RecievedData = new Queue<byte>();
 
         public static List<uint> Timestamps = new List<uint>();
         public static Dictionary<uint, KinematicDatum> KinematicData = new Dictionary<uint, KinematicDatum>();
@@ -57,7 +57,7 @@ namespace DataCollector
             foreach (byte b in data)
             {
                 //Console.WriteLine(b);
-                RecievedKinematicData.Enqueue(b);
+                RecievedData.Enqueue(b);
             }
         }
         public static void test()
@@ -66,26 +66,26 @@ namespace DataCollector
         }
         public static bool TryAppendData()
         {
-            if(RecievedKinematicData.Count >= 13)
+            if(RecievedData.Count >= 13)
             {
                 uint timestamp = 0;
                 for(int i = 3; i >= 0; i--)
                 {
-                   timestamp += (uint)(RecievedKinematicData.Dequeue() << (8*i));
+                   timestamp += (uint)(RecievedData.Dequeue() << (8*i));
                 }
 
-                ushort xPos = (ushort)(RecievedKinematicData.Dequeue() << 8);
-                xPos += RecievedKinematicData.Dequeue();
+                ushort xPos = (ushort)(RecievedData.Dequeue() << 8);
+                xPos += RecievedData.Dequeue();
 
-                ushort yPos = (ushort)(RecievedKinematicData.Dequeue() << 8);
-                yPos += RecievedKinematicData.Dequeue();
+                ushort yPos = (ushort)(RecievedData.Dequeue() << 8);
+                yPos += RecievedData.Dequeue();
 
-                ushort zPos = (ushort)(RecievedKinematicData.Dequeue() << 8);
-                zPos += RecievedKinematicData.Dequeue();
+                ushort zPos = (ushort)(RecievedData.Dequeue() << 8);
+                zPos += RecievedData.Dequeue();
 
-                byte xVel = RecievedKinematicData.Dequeue();
-                byte yVel = RecievedKinematicData.Dequeue();
-                byte zVel = RecievedKinematicData.Dequeue();
+                byte xVel = RecievedData.Dequeue();
+                byte yVel = RecievedData.Dequeue();
+                byte zVel = RecievedData.Dequeue();
 
                 KinematicData.Add(timestamp,new KinematicDatum(xPos,yPos,zPos,xVel,yVel,zVel));
                 Timestamps.Add(timestamp);
