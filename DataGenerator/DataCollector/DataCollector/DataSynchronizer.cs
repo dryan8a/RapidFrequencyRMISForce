@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,10 +37,18 @@ namespace DataCollector
         {
             uint befTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex];
             uint aftTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex + 1];
+            uint kinematicElapsed = aftTimestamp - befTimestamp;
+            uint timeDistanceToClosest = timestamp - befTimestamp;
 
-            ushort xPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].XPos - KinematicDataCollector.KinematicData[befTimestamp].XPos) / (aftTimestamp - befTimestamp)) * (timestamp - befTimestamp) + KinematicDataCollector.KinematicData[befTimestamp].XPos);
+            //approximates data at given time based on closest data
+            ushort xPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].XPos - KinematicDataCollector.KinematicData[befTimestamp].XPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].XPos);
+            ushort yPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].YPos - KinematicDataCollector.KinematicData[befTimestamp].YPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YPos);
+            ushort zPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].ZPos - KinematicDataCollector.KinematicData[befTimestamp].ZPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZPos);
+            byte xVel = (byte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].XVel - KinematicDataCollector.KinematicData[befTimestamp].XVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].XVel);
+            byte yVel = (byte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].YVel - KinematicDataCollector.KinematicData[befTimestamp].YVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YVel);
+            byte zVel = (byte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].ZVel - KinematicDataCollector.KinematicData[befTimestamp].ZVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZVel);
 
-            throw new NotImplementedException();
+            return new KinematicDatum(xPos,yPos, zPos, xVel, yVel, zVel);
         }
     }
 }
