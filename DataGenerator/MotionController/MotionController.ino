@@ -19,9 +19,9 @@ short CurrentXDes;
 short CurrentYDes;
 short CurrentZDes;
 
-byte CurrentXDir;
-byte CurrentYDir;
-byte CurrentZDir;
+int8_t CurrentXDir;
+int8_t CurrentYDir;
+int8_t CurrentZDir;
 
 byte XPulseDelay;
 byte YPulseDelay;
@@ -47,7 +47,8 @@ const byte DataStart = 255;
 //Boundaries
 const short XMaxStep = 3632;
 const short YMaxStep = 1624;
-const short ZLowStep = 1000;
+const short ZLowStep = 1700;
+const short ZStartStep = 500;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
@@ -384,15 +385,8 @@ void UpdateRoutine(bool isMoving)
       break;
 
     case 1:
-      XPulseDelay = 5;
-      YPulseDelay = 3;
-      SetXYPos(1816,812);
-      RoutineState++;
-      break;
-
-    case 2:
       ZPulseDelay = 9;
-      SetZPos(500);
+      SetZPos(200);
       RoutineState = -3;
       break;
   }
@@ -470,9 +464,22 @@ void setup() {
 
   Serial.begin(115200);
 
-  ResetMotors(true, true, false);
+  ResetMotors(true, false, false);
+  ResetMotors(false, true, false);
 
   ResetMotors(false, false, true);
+
+  SetZPos(ZLowStep);
+
+  while(UpdatePosition()){}
+
+  SetXYPos(1816,812);
+
+  while(UpdatePosition()){}
+
+  SetZPos(ZStartStep);  
+
+  while(UpdatePosition()){}
 
   sendIntervalStart = micros();
 }

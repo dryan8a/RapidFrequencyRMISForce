@@ -1,11 +1,11 @@
 int floor1Pin = 0;
 int floor2Pin = 1;
-int floor3Pin = 2;
-int floor4Pin = 3;
-int xWall1Pin = 4;
-int xWall2Pin = 5;
-int yWall1Pin = 6;
-int yWall2Pin = 7;
+int floor3Pin = 7;
+int floor4Pin = 4;
+int xWall1Pin = 2;
+int xWall2Pin = 3;
+int yWall1Pin = 5;
+int yWall2Pin = 6;
 
 unsigned short floor1Output = 0;
 unsigned short floor2Output = 0;
@@ -27,6 +27,13 @@ void SendAllForceData() {
   xWall2Output = (unsigned short)analogRead(xWall2Pin);
   yWall1Output = (unsigned short)analogRead(yWall1Pin);
   yWall2Output = (unsigned short)analogRead(yWall2Pin);
+
+  unsigned long time = micros();
+
+  Serial.write(time >> 24);
+  Serial.write(time >> 16);
+  Serial.write(time >> 8);
+  Serial.write(time);
 
   Serial.write(floor1Output >> 8);
   Serial.write(floor1Output);
@@ -56,6 +63,11 @@ void SendAllForceData() {
 void setup() {
   Serial.begin(115200);
   timeStart = micros();
+
+  //while(Serial.available()) Serial.read();
+
+  while(!Serial.available()){}
+  Serial.read();
 }
  
 void loop() {

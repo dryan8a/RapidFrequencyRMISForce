@@ -39,7 +39,6 @@ namespace DataCollector
         [STAThread]
         public static void Initialize()
         {
-            MotorSerialPort.DataReceived += MotorSerialPort_DataReceived;
             if(!MotorSerialPort.IsOpen) MotorSerialPort.Open();
         }
 
@@ -48,25 +47,21 @@ namespace DataCollector
             MotorSerialPort.Close();
         }
         
-
-        private static void MotorSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            byte[] data = new byte[MotorSerialPort.BytesToRead];
-            MotorSerialPort.Read(data, 0, data.Length);
-
-            foreach (byte b in data)
-            {
-                //Console.WriteLine(b);
-                RecievedData.Enqueue(b);
-            }
-        }
-        public static void test()
-        {
-            int testing = 0;
-        }
         public static bool TryAppendData()
         {
-            if(RecievedData.Count >= 13)
+            if (MotorSerialPort.BytesToRead > 0)
+            {
+                byte[] data = new byte[MotorSerialPort.BytesToRead];
+                MotorSerialPort.Read(data, 0, data.Length);
+
+                foreach (byte b in data)
+                {
+                    //Console.WriteLine(b);
+                    RecievedData.Enqueue(b);
+                }
+            }
+
+            if (RecievedData.Count >= 13)
             {
                 uint timestamp = 0;
                 for(int i = 3; i >= 0; i--)

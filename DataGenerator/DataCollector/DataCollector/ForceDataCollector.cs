@@ -39,7 +39,7 @@ namespace DataCollector
 
     static class ForceDataCollector
     {
-        static SerialPort ForceSerialPort = new SerialPort("COM?", 115200, Parity.None, 8, StopBits.One);
+        static SerialPort ForceSerialPort = new SerialPort("COM4", 115200);
         static Queue<byte> RecievedData = new Queue<byte>();
 
         public static Dictionary<uint, ForceInputDatum> ForceData = new Dictionary<uint, ForceInputDatum>();
@@ -50,32 +50,67 @@ namespace DataCollector
 
         public static void Initialize()
         {
-            ForceSerialPort.DataReceived += ForceSerialPort_DataReceived;
             if (!ForceSerialPort.IsOpen) ForceSerialPort.Open();
-        }
 
-        private static void ForceSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            byte[] data = new byte[ForceSerialPort.BytesToRead];
-            ForceSerialPort.Read(data, 0, data.Length);
-
-            foreach (byte b in data)
-            {
-                //Console.WriteLine(b);
-                RecievedData.Enqueue(b);
-            }
+            ForceSerialPort.Write(new byte[] { 111 }, 0, 1);
         }
 
         public static bool TryAppendData()
         {
-            if(RecievedData.Count >= 16)
+            if (ForceSerialPort.BytesToRead > 0)
             {
-                ushort[] floorData = new ushort[4];
-                for(int i = 0; i < 4; i++)
+                byte[] data = new byte[ForceSerialPort.BytesToRead];
+                ForceSerialPort.Read(data, 0, data.Length);
+
+                //if (ForceData.Count == 0 && RecievedData.Count == 0 && data[0] == 128)
+                //{
+                //    data = data[1..];
+                //}
+
+                foreach (byte b in data)
                 {
-                    floorData[i] = RecievedData.Dequeue();
+                    //Console.WriteLine(b);
+                    RecievedData.Enqueue(b);
                 }
-                //do the rest of this
+            }
+            if (RecievedData.Count >= 20)
+            {
+                uint timestamp = 0;
+                for (int i = 3; i >= 0; i--)
+                {
+                    timestamp += (uint)(RecievedData.Dequeue() << (8 * i));
+                }
+
+                ushort[] floorData = new ushort[4] { 0, 0, 0, 0 };
+                for(int floor = 0; floor < 4; floor++)
+                {
+                    for (int i = 1; i >= 0; i--)
+                    {
+                        floorData[floor] += (ushort)(RecievedData.Dequeue() << (8 * i));
+                    }
+                }
+
+                ushort zInputForce = ushort.Max(floorData[0],ushort.Max(floorData[1],ushort.Max(floorData[2], floorData[3])));
+
+                ushort xWall1 = (ushort)(RecievedData.Dequeue() << 8);
+                xWall1 += RecievedData.Dequeue();
+
+                ushort xWall2 = (ushort)(RecievedData.Dequeue() << 8);
+                xWall2 += RecievedData.Dequeue();
+
+                ushort xInputForce = ushort.Max(xWall1, xWall2);
+
+                ushort yWall1 = (ushort)(RecievedData.Dequeue() << 8);
+                yWall1 += RecievedData.Dequeue();
+
+                ushort yWall2 = (ushort)(RecievedData.Dequeue() << 8);
+                yWall2 += RecievedData.Dequeue();
+
+                ushort yInputForce = ushort.Max(yWall1, yWall2);
+
+                ForceData.Add(timestamp, new ForceInputDatum(xInputForce, yInputForce, zInputForce));
+
+                Console.WriteLine($"{timestamp} {xInputForce} {yInputForce} {zInputForce}");
 
                 return true;
             }

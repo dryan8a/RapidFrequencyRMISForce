@@ -12,10 +12,14 @@ namespace DataCollector
         {
             Console.WriteLine("Start search");
 
-            KinematicDataCollector.Initialize();
-
+            //KinematicDataCollector.Initialize();
+            ForceDataCollector.Initialize();
             
-            while (true) { KinematicDataCollector.TryAppendData(); }
+            while (true) 
+            {
+                //KinematicDataCollector.TryAppendData();
+                ForceDataCollector.TryAppendData();
+            }
         }
 
 
