@@ -39,7 +39,11 @@ namespace DataCollector
 
             StreamWriter outputWriter = new StreamWriter(OutputPath);
 
-            ;
+            DataSynchronizer.OutputData(outputWriter);
+
+            outputWriter.Close();
+            
+            Console.WriteLine("Output Data");
         }
 
 

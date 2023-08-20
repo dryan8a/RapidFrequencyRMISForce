@@ -9,9 +9,9 @@ namespace DataCollector
 {
     public struct CombinedDatum
     {
-        uint Timestamp;
-        ForceDatum ForceDatum;
-        KinematicDatum KinematicDatum;
+        public uint Timestamp;
+        public ForceDatum ForceDatum;
+        public KinematicDatum KinematicDatum;
 
         public CombinedDatum(uint timestamp, ForceDatum forcedDatum, KinematicDatum kinematicDatum)
         {
@@ -30,6 +30,14 @@ namespace DataCollector
         static DataSynchronizer()
         {
             PreviousKinematicTimestampIndex = 0;
+        }
+
+        public static void OutputData(StreamWriter outputWriter)
+        {
+            foreach(CombinedDatum datum in CombinedData) 
+            {
+                outputWriter.Write($"{datum.Timestamp} {datum.KinematicDatum.XPos} {datum.KinematicDatum.YPos} {datum.KinematicDatum.ZPos} {datum.KinematicDatum.XVel} {datum.KinematicDatum.YVel} {datum.KinematicDatum.ZVel} {datum.ForceDatum.XForce} {datum.ForceDatum.YForce} {datum.ForceDatum.ZForce}");
+            }
         }
 
         public static void SyncData()
