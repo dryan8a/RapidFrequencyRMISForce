@@ -17,6 +17,7 @@ unsigned short yWall1Output = 0;
 unsigned short yWall2Output = 0;
 
 long timeStart;
+long programStart;
 
 void SendAllForceData() {
   floor1Output = (unsigned short)analogRead(floor1Pin);
@@ -28,7 +29,7 @@ void SendAllForceData() {
   yWall1Output = (unsigned short)analogRead(yWall1Pin);
   yWall2Output = (unsigned short)analogRead(yWall2Pin);
 
-  unsigned long time = micros();
+  unsigned long time = micros() - programStart;
 
   Serial.write(time >> 24);
   Serial.write(time >> 16);
@@ -62,12 +63,16 @@ void SendAllForceData() {
 
 void setup() {
   Serial.begin(115200);
-  timeStart = micros();
 
   //while(Serial.available()) Serial.read();
 
   while(!Serial.available()){}
   Serial.read();
+
+  while(analogRead(floor4Pin) == 0) {}
+  programStart = micros();
+
+  timeStart = programStart;
 }
  
 void loop() {

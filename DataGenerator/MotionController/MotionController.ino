@@ -49,12 +49,14 @@ const short XMaxStep = 3632;
 const short YMaxStep = 1624;
 const short ZLowStep = 1700;
 const short ZStartStep = 500;
+const short ZSyncStep = 222;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
 const short RoutineCount = 1;
 
 long sendIntervalStart;
+long programStart;
 const long sendInterval = 1500;
 
 void Pulse(int StepPin, int microDelay = 250)
@@ -370,6 +372,10 @@ void UpdateRoutine(bool isMoving)
   {
     case -3:
       RoutineState = -2;
+      for(int i = 0; i < 4; i++)
+      {
+        Serial.write(DataStart);
+      }
       break;
     case -2:
       break;
@@ -385,16 +391,53 @@ void UpdateRoutine(bool isMoving)
       break;
 
     case 1:
-      ZPulseDelay = 9;
-      SetZPos(200);
-      RoutineState = -3;
+      ZPulseDelay = 3;
+      SetZPos(400);
+      RoutineState = 2;
       break;
+
+    case 2:
+      XPulseDelay = 12;
+      YPulseDelay = 5;
+      SetXYPos(2100, 700);
+      RoutineState = 3;
+      break;
+
+    case 3:
+      ZPulseDelay = 2;
+      SetZPos(160);
+      RoutineState = 4;
+      break;
+    
+    case 4:
+      ZPulseDelay = 10;
+      SetZPos(300);
+      RoutineState = 5;
+      break;
+    
+    case 5:
+      XPulseDelay = 4;
+      YPulseDelay = 9;
+      SetXYPos(1900,500);
+      RoutineState = 6;
+    
+    case 6:
+      XPulseDelay = 15;
+      YPulseDelay = 2;
+      SetXYPos(1600,700);
+      RoutineState = 7;
+
+    case 7:
+      XPulseDelay = 11;
+      YPulseDelay = 11;
+      SetXYPos(1600,500);
+      RoutineState = -3;
   }
 }
 
 void SendAllKinematicData()
 {
-  unsigned long time = micros();
+  unsigned long time = micros() - programStart;
 
   Serial.write(time >> 24);
   Serial.write(time >> 16);
@@ -470,18 +513,24 @@ void setup() {
   ResetMotors(false, false, true);
 
   SetZPos(ZLowStep);
-
   while(UpdatePosition()){}
 
   SetXYPos(1816,812);
-
   while(UpdatePosition()){}
 
   SetZPos(ZStartStep);  
-
   while(UpdatePosition()){}
 
-  sendIntervalStart = micros();
+  ZPulseDelay = 9;
+
+  while(!Serial.available()){}
+  Serial.read();
+
+  SetZPos(ZSyncStep);
+  while(UpdatePosition()){}
+
+  programStart = micros();
+  sendIntervalStart = programStart;
 }
 
 int loopCount = 0;

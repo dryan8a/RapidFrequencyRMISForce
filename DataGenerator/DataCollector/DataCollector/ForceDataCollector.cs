@@ -52,20 +52,32 @@ namespace DataCollector
         {
             if (!ForceSerialPort.IsOpen) ForceSerialPort.Open();
 
+            ForceSerialPort.DiscardInBuffer();
+            ForceSerialPort.DiscardOutBuffer();
+
             ForceSerialPort.Write(new byte[] { 111 }, 0, 1);
+        }
+
+        public static void StopCollection()
+        {
+            ForceSerialPort.Close();
         }
 
         public static bool TryAppendData()
         {
-            if (ForceSerialPort.BytesToRead > 0)
+            bool isTrying = false;
+
+            if (ForceSerialPort.IsOpen && ForceSerialPort.BytesToRead > 0)
             {
+                isTrying = true;
+
                 byte[] data = new byte[ForceSerialPort.BytesToRead];
                 ForceSerialPort.Read(data, 0, data.Length);
 
-                //if (ForceData.Count == 0 && RecievedData.Count == 0 && data[0] == 128)
-                //{
-                //    data = data[1..];
-                //}
+                if (ForceData.Count == 0 && RecievedData.Count == 0 && data[0] == 128)
+                {
+                    data = data[1..];
+                }
 
                 foreach (byte b in data)
                 {
@@ -75,6 +87,8 @@ namespace DataCollector
             }
             if (RecievedData.Count >= 20)
             {
+                isTrying = true;
+
                 uint timestamp = 0;
                 for (int i = 3; i >= 0; i--)
                 {
@@ -111,10 +125,17 @@ namespace DataCollector
                 ForceData.Add(timestamp, new ForceInputDatum(xInputForce, yInputForce, zInputForce));
 
                 Console.WriteLine($"{timestamp} {xInputForce} {yInputForce} {zInputForce}");
-
-                return true;
             }
-            return false;
+            return isTrying;
+        }
+
+        public static ForceDatum InputToForce(ForceInputDatum input)
+        {
+            var xForce = VoltageToNewtons(MapInputToVoltage(input.XInputForce));
+            var yForce = VoltageToNewtons(MapInputToVoltage(input.YInputForce));
+            var zForce = VoltageToNewtons(MapInputToVoltage(input.ZInputForce));
+
+            return new ForceDatum(xForce, yForce, zForce);
         }
 
         static double MapInputToVoltage(int input)

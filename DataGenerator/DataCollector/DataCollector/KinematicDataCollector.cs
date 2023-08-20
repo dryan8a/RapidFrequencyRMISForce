@@ -12,11 +12,11 @@ namespace DataCollector
         public ushort XPos;
         public ushort YPos;
         public ushort ZPos;
-        public byte XVel;
-        public byte YVel;
-        public byte ZVel;
+        public sbyte XVel;
+        public sbyte YVel;
+        public sbyte ZVel;
         public KinematicDatum() { }
-        public KinematicDatum(ushort xPos,ushort yPos,ushort zPos,byte xVel,byte yVel,byte zVel)
+        public KinematicDatum(ushort xPos,ushort yPos,ushort zPos,sbyte xVel,sbyte yVel,sbyte zVel)
         {
             XPos = xPos;
             YPos = yPos;
@@ -32,14 +32,19 @@ namespace DataCollector
         static SerialPort MotorSerialPort = new SerialPort("COM3", 115200, Parity.None, 8, StopBits.One);
         static Queue<byte> RecievedData = new Queue<byte>();
 
+        public static bool IsOpen => MotorSerialPort.IsOpen;
+
         public static List<uint> Timestamps = new List<uint>();
         public static Dictionary<uint, KinematicDatum> KinematicData = new Dictionary<uint, KinematicDatum>();
 
+        private static int EndSequenceCount = 0;
 
         [STAThread]
         public static void Initialize()
         {
             if(!MotorSerialPort.IsOpen) MotorSerialPort.Open();
+
+            MotorSerialPort.Write(new byte[] { 111 }, 0, 1);
         }
 
         public static void StopCollection()
@@ -49,20 +54,34 @@ namespace DataCollector
         
         public static bool TryAppendData()
         {
-            if (MotorSerialPort.BytesToRead > 0)
+            bool isTrying = false;
+            if (MotorSerialPort.IsOpen && MotorSerialPort.BytesToRead > 0)
             {
+                isTrying = true;
+
                 byte[] data = new byte[MotorSerialPort.BytesToRead];
                 MotorSerialPort.Read(data, 0, data.Length);
 
                 foreach (byte b in data)
                 {
+                    if (b == 0xFF) EndSequenceCount++;
+                    else EndSequenceCount = 0;
+
                     //Console.WriteLine(b);
                     RecievedData.Enqueue(b);
+
+                    if (EndSequenceCount >= 4)
+                    {
+                        StopCollection();
+                        break;
+                    }
                 }
             }
 
             if (RecievedData.Count >= 13)
             {
+                isTrying = true;
+
                 uint timestamp = 0;
                 for(int i = 3; i >= 0; i--)
                 {
@@ -78,15 +97,15 @@ namespace DataCollector
                 ushort zPos = (ushort)(RecievedData.Dequeue() << 8);
                 zPos += RecievedData.Dequeue();
 
-                byte xVel = RecievedData.Dequeue();
-                byte yVel = RecievedData.Dequeue();
-                byte zVel = RecievedData.Dequeue();
+                sbyte xVel = (sbyte)RecievedData.Dequeue();
+                sbyte yVel = (sbyte)RecievedData.Dequeue();
+                sbyte zVel = (sbyte)RecievedData.Dequeue();
 
                 KinematicData.Add(timestamp,new KinematicDatum(xPos,yPos,zPos,xVel,yVel,zVel));
                 Timestamps.Add(timestamp);
-                return true;
             }
-            return false;
+
+            return isTrying;
         }
     }
 }
