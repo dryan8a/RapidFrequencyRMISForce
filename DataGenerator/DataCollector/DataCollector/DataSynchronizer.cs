@@ -21,11 +21,27 @@ namespace DataCollector
         }
     }
 
+    public struct NNTrainingDatum
+    {
+        public KinematicDatum CurrKinematicDatum;
+        public ForceDatum PrevForceDatum;
+        public ForceDatum ForceDatumToPredict;
+
+        public NNTrainingDatum(KinematicDatum currKinematicDatum, ForceDatum prevForceDatum, ForceDatum forceDatumToPredict)
+        {
+            CurrKinematicDatum = currKinematicDatum;
+            PrevForceDatum = prevForceDatum;
+            ForceDatumToPredict = forceDatumToPredict;
+        }
+
+    }
+
     public static class DataSynchronizer
     {
         private static int PreviousKinematicTimestampIndex;
 
         public static List<CombinedDatum> CombinedData = new List<CombinedDatum>();
+        public static List<NNTrainingDatum> TrainingData = new List<NNTrainingDatum>();
 
         static DataSynchronizer()
         {
@@ -36,7 +52,34 @@ namespace DataCollector
         {
             foreach(CombinedDatum datum in CombinedData) 
             {
-                outputWriter.Write($"{datum.Timestamp} {datum.KinematicDatum.XPos} {datum.KinematicDatum.YPos} {datum.KinematicDatum.ZPos} {datum.KinematicDatum.XVel} {datum.KinematicDatum.YVel} {datum.KinematicDatum.ZVel} {datum.ForceDatum.XForce} {datum.ForceDatum.YForce} {datum.ForceDatum.ZForce}");
+                outputWriter.Write($"{datum.Timestamp} {datum.KinematicDatum.XPos} {datum.KinematicDatum.YPos} {datum.KinematicDatum.ZPos} {datum.KinematicDatum.XVel} {datum.KinematicDatum.YVel} {datum.KinematicDatum.ZVel} {datum.ForceDatum.XForce} {datum.ForceDatum.YForce} {datum.ForceDatum.ZForce}\n");
+            }
+        }
+
+        public static void OutputTrainingData(StreamWriter outputWriter)
+        {
+            foreach(NNTrainingDatum datum in TrainingData)
+            {
+                outputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+            }
+        }
+
+
+        /// <summary>
+        /// Outputs training data in random order NOTE: deletes all data in TrainingData in the process
+        /// </summary>
+        /// <param name="outputWriter"></param>
+        public static void OutputRandomizedTrainingData(StreamWriter outputWriter) 
+        {
+            Random gen = new Random();
+            for (int i = 0; i < TrainingData.Count;)
+            {
+                var indexToRemove = gen.Next(0, TrainingData.Count);
+
+                var datum = TrainingData[indexToRemove];
+                outputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+
+                TrainingData.RemoveAt(indexToRemove);
             }
         }
 
@@ -52,6 +95,14 @@ namespace DataCollector
                 var combinedDatum = new CombinedDatum(forDatumPair.Key, forDatum, kinDatum);
 
                 CombinedData.Add(combinedDatum);
+            }
+        }
+
+        public static void CompileTrainingData()
+        {
+            for(int i = 1; i < CombinedData.Count; i++) 
+            {
+                TrainingData.Add(new NNTrainingDatum(CombinedData[i].KinematicDatum, CombinedData[i - 1].ForceDatum, CombinedData[i].ForceDatum));
             }
         }
 

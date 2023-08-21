@@ -36,12 +36,23 @@ namespace DataCollector
             Console.WriteLine("Data Synced");
 
             string OutputPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\GenerationOutput.txt";
+            string TrainingPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\TrainingData.txt";
+            string RanTrainingPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\RandomizedTrainingData.txt";
+
 
             StreamWriter outputWriter = new StreamWriter(OutputPath);
-
             DataSynchronizer.OutputData(outputWriter);
-
             outputWriter.Close();
+
+            DataSynchronizer.CompileTrainingData();
+
+            StreamWriter trainingWriter = new StreamWriter(TrainingPath);
+            DataSynchronizer.OutputTrainingData(trainingWriter);
+            trainingWriter.Close();
+
+            StreamWriter ranTrainingWriter = new StreamWriter(RanTrainingPath);
+            DataSynchronizer.OutputRandomizedTrainingData(ranTrainingWriter);
+            ranTrainingWriter.Close();
             
             Console.WriteLine("Output Data");
         }

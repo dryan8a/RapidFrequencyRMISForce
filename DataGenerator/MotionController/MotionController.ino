@@ -49,7 +49,7 @@ const short XMaxStep = 3632;
 const short YMaxStep = 1624;
 const short ZLowStep = 1700;
 const short ZStartStep = 500;
-const short ZSyncStep = 222;
+const short ZSyncStep = 220;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
@@ -393,45 +393,222 @@ void UpdateRoutine(bool isMoving)
     case 1:
       ZPulseDelay = 3;
       SetZPos(400);
-      RoutineState = 2;
+      RoutineState++;
       break;
 
     case 2:
-      XPulseDelay = 12;
+      XPulseDelay = 7;
       YPulseDelay = 5;
-      SetXYPos(2100, 700);
-      RoutineState = 3;
+      SetXYPos(2120, 700);
+      RoutineState++;
       break;
 
     case 3:
       ZPulseDelay = 2;
       SetZPos(160);
-      RoutineState = 4;
+      RoutineState++;
       break;
     
     case 4:
       ZPulseDelay = 10;
       SetZPos(300);
-      RoutineState = 5;
+      RoutineState++;
       break;
     
     case 5:
       XPulseDelay = 4;
       YPulseDelay = 9;
-      SetXYPos(1900,500);
-      RoutineState = 6;
+      SetXYPos(1900,485);
+      RoutineState++;
+      break;
     
     case 6:
-      XPulseDelay = 15;
+      XPulseDelay = 9;
       YPulseDelay = 2;
-      SetXYPos(1600,700);
-      RoutineState = 7;
+      ZPulseDelay = 6;
+      SetXYPos(1400,800);
+      SetZPos(500);
+      RoutineState++;
+      break;
 
     case 7:
       XPulseDelay = 11;
       YPulseDelay = 11;
-      SetXYPos(1600,500);
+      SetXYPos(1400,465);
+      RoutineState++;
+      break;
+    
+    case 8:
+      XPulseDelay = 7;
+      YPulseDelay = 12;
+      SetXYPos(1300,470);
+      RoutineState++;
+      break;
+
+    case 9:
+      XPulseDelay = 5;
+      YPulseDelay = 3;
+      ZPulseDelay = 8;
+      SetXYPos(1450,1200);
+      SetZPos(100);
+      RoutineState++;
+      break;
+
+    case 10:
+      XPulseDelay = 2;
+      ZPulseDelay = 2;
+      SetXYPos(2130,1200);
+      SetZPos(375);
+      RoutineState++;
+      break;
+    
+    case 11:
+      XPulseDelay = 2;
+      YPulseDelay = 3;
+      SetXYPos(1750,480);
+      SetZPos(475);
+      RoutineState++;
+      break;
+    
+    case 12:
+      XPulseDelay = 4;
+      YPulseDelay = 1;
+      ZPulseDelay = 1;
+      SetXYPos(1800,600);
+      SetZPos(150);
+      RoutineState++;
+      break;
+    
+    case 13:
+      SetXYPos(1850,620);
+      SetZPos(250);
+      RoutineState++;
+      break;
+    
+    case 14:
+      SetZPos(100);
+      RoutineState++;
+      break;
+    
+    case 15:
+      ZPulseDelay = 10;
+      SetZPos(300);
+      RoutineState++;
+      break;
+
+    case 16:
+      ZPulseDelay = 6;
+      SetZPos(10);
+      RoutineState++;
+      break;
+    
+    case 17:
+      SetXYPos(1820,440);
+      SetZPos(300);
+      RoutineState++;
+      break;
+
+    case 18:
+      ZPulseDelay = 14;
+      SetXYPos(2145,600);
+      SetZPos(320);
+      RoutineState++;
+      break;
+    
+    case 19:
+      SetXYPos(2145,700);
+      RoutineState++;
+      break;
+    
+    case 20:
+      XPulseDelay++;
+      YPulseDelay += 2;
+      SetXYPos(1900,460);
+      RoutineState++;
+      break;
+    
+    case 21:
+      ZPulseDelay = 7;
+      SetZPos(40);
+      RoutineState++;
+      break;
+    
+    case 22:
+      XPulseDelay++;
+      YPulseDelay++;
+      ZPulseDelay -= 3;
+      SetXYPos(1800, 800);
+      SetZPos(320);
+      RoutineState++;
+      break;
+    
+    case 23:
+      SetXYPos(2130,450);
+      SetZPos(405);
+      RoutineState++;
+      break;
+    
+    case 24:
+      SetXYPos(1816,812);
+      RoutineState++;
+      break;
+
+    case 25:
+      XPulseDelay++;
+      YPulseDelay = 2;
+      ZPulseDelay = 3;
+      SetXYPos(1350,700);
+      SetZPos(175);
+      RoutineState++;
+      break;
+
+    case 26:
+      SetXYPos(1365, 420);
+      SetZPos(250);
+      RoutineState++;
+      break;
+    
+    case 27:
+      SetXYPos(1365,550);
+      SetZPos(300);
+      RoutineState++;
+      break;
+    
+    case 28:
+      SetXYPos(1365,425);
+      RoutineState++;
+      break;
+    
+    case 29:
+      YPulseDelay = 4;
+      SetXYPos(1365,525);
+      RoutineState++;
+      break;
+    
+    case 30:
+      SetXYPos(1365,425);
+      RoutineState++;
+      break;
+    
+    case 31:
+      SetXYPos(1375,600);
+      SetZPos(150);
+      RoutineState++;
+      break;
+    
+    case 32: 
+      XPulseDelay = 3;
+      YPulseDelay = 5;
+      ZPulseDelay = 6;
+      SetXYPos(2140,1150);
+      SetZPos(380);
+      RoutineState++;
+      break;
+    
+    case 33:
+      SetXYPos(2000,1100);
       RoutineState = -3;
+      break;
   }
 }
 
