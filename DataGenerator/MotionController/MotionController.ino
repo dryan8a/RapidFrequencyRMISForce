@@ -53,7 +53,7 @@ const short ZSyncStep = 220;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
-const short RoutineCount = 1;
+const short RoutineCount = 3;
 
 long sendIntervalStart;
 long programStart;
@@ -385,9 +385,13 @@ void UpdateRoutine(bool isMoving)
     case 0:
       if(RoutineIteration >= RoutineCount)
       {
-        RoutineState = -2;
+        RoutineState = -3;
       }
-      RoutineState = 1;
+      else
+      {
+        RoutineIteration++;
+        RoutineState = 1;
+      }
       break;
 
     case 1:
@@ -516,7 +520,7 @@ void UpdateRoutine(bool isMoving)
       break;
     
     case 19:
-      SetXYPos(2145,700);
+      SetXYPos(2150,700);
       RoutineState++;
       break;
     
@@ -606,8 +610,30 @@ void UpdateRoutine(bool isMoving)
       break;
     
     case 33:
-      SetXYPos(2000,1100);
-      RoutineState = -3;
+      SetXYPos(2000,1100); 
+      SetZPos(130);
+      RoutineState++;
+      break;
+    
+    case 34:
+      XPulseDelay = 4;
+      ZPulseDelay = 2;
+      SetXYPos(2135,1050);
+      SetZPos(175);
+      RoutineState++;
+      break;
+    
+    case 35:
+      YPulseDelay = 6;
+      SetXYPos(2050,430);
+      SetZPos(250);
+      RoutineState++;
+      break;
+    
+    case 36:
+      SetXYPos(1812,816);
+      SetZPos(ZSyncStep);
+      RoutineState = 0;
       break;
   }
 }

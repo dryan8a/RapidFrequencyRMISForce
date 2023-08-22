@@ -38,6 +38,7 @@ namespace DataCollector
             string OutputPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\GenerationOutput.txt";
             string TrainingPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\TrainingData.txt";
             string RanTrainingPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\RandomizedTrainingData.txt";
+            string RanNormTrainingPath = @"C:\Users\dryan\Documents\PioneerAcademics2023\RandomizedNormalizedTrainingData.txt";
 
 
             StreamWriter outputWriter = new StreamWriter(OutputPath);
@@ -51,8 +52,10 @@ namespace DataCollector
             trainingWriter.Close();
 
             StreamWriter ranTrainingWriter = new StreamWriter(RanTrainingPath);
-            DataSynchronizer.OutputRandomizedTrainingData(ranTrainingWriter);
+            StreamWriter ranNormTrainingWriter = new StreamWriter(RanNormTrainingPath);
+            DataSynchronizer.OutputRandomizedTrainingData(ranTrainingWriter, ranNormTrainingWriter);
             ranTrainingWriter.Close();
+            ranNormTrainingWriter.Close();
             
             Console.WriteLine("Output Data");
         }

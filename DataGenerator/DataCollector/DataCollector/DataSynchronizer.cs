@@ -68,8 +68,8 @@ namespace DataCollector
         /// <summary>
         /// Outputs training data in random order NOTE: deletes all data in TrainingData in the process
         /// </summary>
-        /// <param name="outputWriter"></param>
-        public static void OutputRandomizedTrainingData(StreamWriter outputWriter) 
+        /// <param name="ranOutputWriter"></param>
+        public static void OutputRandomizedTrainingData(StreamWriter ranOutputWriter, StreamWriter ranNormOutputWriter) 
         {
             Random gen = new Random();
             for (int i = 0; i < TrainingData.Count;)
@@ -77,7 +77,10 @@ namespace DataCollector
                 var indexToRemove = gen.Next(0, TrainingData.Count);
 
                 var datum = TrainingData[indexToRemove];
-                outputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+
+                ranOutputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+
+                //ranNormOutputWriter.Write($"");
 
                 TrainingData.RemoveAt(indexToRemove);
             }
@@ -88,7 +91,7 @@ namespace DataCollector
             foreach(var forDatumPair in ForceDataCollector.ForceData)
             {
                 var timestampIndex = GetClosestKinematicTimestampIndex(forDatumPair.Key);
-                var kinDatum = ApproximateCorrectedKinematicDatum(forDatumPair.Key, timestampIndex);
+                var kinDatum = KinematicDataCollector.InputToKinematic(ApproximateCorrectedKinematicDatum(forDatumPair.Key, timestampIndex));
 
                 var forDatum = ForceDataCollector.InputToForce(forDatumPair.Value);
 
@@ -123,7 +126,7 @@ namespace DataCollector
             }
         }
 
-        public static KinematicDatum ApproximateCorrectedKinematicDatum(uint timestamp, int ClosestKinematicTimestampIndex)
+        public static KinematicInputDatum ApproximateCorrectedKinematicDatum(uint timestamp, int ClosestKinematicTimestampIndex)
         {
             if (ClosestKinematicTimestampIndex >= KinematicDataCollector.Timestamps.Count - 1)
             {
@@ -144,7 +147,7 @@ namespace DataCollector
             sbyte yVel = (sbyte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].YVel - KinematicDataCollector.KinematicData[befTimestamp].YVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YVel);
             sbyte zVel = (sbyte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].ZVel - KinematicDataCollector.KinematicData[befTimestamp].ZVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZVel);
 
-            return new KinematicDatum(xPos,yPos, zPos, xVel, yVel, zVel);
+            return new KinematicInputDatum(xPos,yPos, zPos, xVel, yVel, zVel);
         }
     }
 }
