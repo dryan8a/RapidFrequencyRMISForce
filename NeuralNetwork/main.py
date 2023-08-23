@@ -30,10 +30,15 @@ for i in range(0,datasetLines.__len__()):
 #print(inputTestData.__len__())
 #print(outputTestData.__len__())
 
+''' Best Configurations:
+    Dense 7, Dense 3, Epochs 200, Batch size 5: loss 0.0077, accuracy 0.987, mean absolute error 0.0299, 750us/step 
+    Dense 8, Dense 3, Epochs 200, Batch size 5: loss 0.0069, accuracy 0.9944, mean absolute error 0.0251, 750us/step 
+'''
+
 
 
 model = Sequential()
-model.add(Dense(6, input_shape=(9,), activation='relu'))
+model.add(Dense(8, input_shape=(9,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy', 'mean_absolute_error'])
