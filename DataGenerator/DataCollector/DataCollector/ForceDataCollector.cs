@@ -45,6 +45,8 @@ namespace DataCollector
         public static Dictionary<uint, ForceInputDatum> ForceData = new Dictionary<uint, ForceInputDatum>();
 
         private static bool Paused = false;
+        private static int PostPauseCount = 21;
+        private static bool FoundNonZero = true;
 
         const double MaxVoltage = 5000; //mV
         const int MaxInput = 1023;
@@ -65,6 +67,14 @@ namespace DataCollector
             ForceSerialPort.Close();
         }
 
+        public static void TogglePause()
+        {
+            Paused = !Paused;
+            RecievedData.Clear();
+            PostPauseCount = 0;
+            FoundNonZero = false;
+        }
+
         public static bool TryAppendData()
         {
             bool isTrying = false;
@@ -81,12 +91,25 @@ namespace DataCollector
                     data = data[1..];
                 }
 
+                if (Paused) return true;
+
+
                 foreach (byte b in data)
                 {
                     //Console.WriteLine(b);
-                    if(!Paused) RecievedData.Enqueue(b);
+                    if (!Paused)
+                    {
+                        PostPauseCount++;
+                    }
+
+                    if (!Paused && !(PostPauseCount <= 20 && b == 0 && !FoundNonZero))
+                    {
+                        RecievedData.Enqueue(b);
+                        FoundNonZero = true;
+                    }
                 }
             }
+
             if (RecievedData.Count >= 20)
             {
                 isTrying = true;

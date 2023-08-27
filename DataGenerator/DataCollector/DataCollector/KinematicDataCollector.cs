@@ -100,7 +100,15 @@ namespace DataCollector
                     {
                         PauseSequenceCount = 0;
                         Paused = !Paused;
-                        break;
+                        
+                        ForceDataCollector.TogglePause();
+                        Console.WriteLine("Paused");
+                        if (Paused)
+                        {
+                            RecievedData.Clear();
+                            break;
+                        }
+                        else continue;
                     }
 
                     //Console.WriteLine(b);

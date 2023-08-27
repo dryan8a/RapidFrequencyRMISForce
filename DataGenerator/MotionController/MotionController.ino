@@ -398,10 +398,10 @@ void UpdateRoutine(bool isMoving)
       {
         RoutineState = -3;
       }
-      else
+      else if(RoutineIteration > 0)
       {
         SendPauseData();
-        
+
         ResetMotors(true,false,false);
         ResetMotors(false,true,false);
 
@@ -409,11 +409,15 @@ void UpdateRoutine(bool isMoving)
         while(UpdatePosition()){}
         SetXYPos(1812,816);
         while(UpdatePosition()){}
-
-        SendPauseData();
         RoutineIteration++;
         RoutineState = 1;
+        SendPauseData();
         SetZPos(ZSyncStep);
+      }
+      else
+      {
+        RoutineIteration++;
+        RoutineState = 1;
       }
       break;
 
