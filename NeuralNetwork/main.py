@@ -128,7 +128,7 @@ for i in range(0,inputFeedbackTestData.__len__()):
 feedbackMAE /= inputFeedbackTestData.__len__()
 feedbackMSE /= inputFeedbackTestData.__len__()
 
-meanSpeed /= inputTestData.__len__()
+meanSpeed /= (2 * inputTestData.__len__())
 meanFrequency = 1000000.0 / meanSpeed
 
 #RESULT OUTPUT

@@ -2,5 +2,5 @@ Single Estimation Test MAE: 0.035379404945682466
 Single Estimation Test MSE(Loss): 0.0068481666164986596
 Feedback Estimation Test MAE: 0.17594525192146046
 Feedback Estimation Test MSE(Loss): 0.22563101298791677
-Test Prediction Mean Speed: 777.5677668606289
-Test Prediction Frequency: 1286.0615403817785
+Test Prediction Mean Speed: 388.78388343031445
+Test Prediction Frequency: 2572.12308076355694
