@@ -42,8 +42,6 @@ int8_t SendXVel;
 int8_t SendYVel;
 int8_t SendZVel;
 
-const byte DataStart = 255;
-
 //Boundaries
 const short XMaxStep = 3632;
 const short YMaxStep = 1624;
@@ -53,7 +51,7 @@ const short ZSyncStep = 220;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
-const short RoutineCount = 3;
+const short RoutineCount = 10;
 
 long sendIntervalStart;
 long programStart;
@@ -365,6 +363,22 @@ void ZSpeedTest()
   }
 }
 
+void SendEndData()
+{
+  for(int i = 0; i < 4; i++)
+  {
+    Serial.write(255);
+  }
+}
+
+void SendPauseData()
+{
+  for(int i = 0; i < 4; i++)
+  {
+    Serial.write(254);
+  }
+}
+
 void UpdateRoutine(bool isMoving)
 {
   if(isMoving) return;
@@ -372,10 +386,7 @@ void UpdateRoutine(bool isMoving)
   {
     case -3:
       RoutineState = -2;
-      for(int i = 0; i < 4; i++)
-      {
-        Serial.write(DataStart);
-      }
+      SendEndData();
       break;
     case -2:
       break;
@@ -389,8 +400,20 @@ void UpdateRoutine(bool isMoving)
       }
       else
       {
+        SendPauseData();
+        
+        ResetMotors(true,false,false);
+        ResetMotors(false,true,false);
+
+        SetXYPos(5,812);
+        while(UpdatePosition()){}
+        SetXYPos(1812,816);
+        while(UpdatePosition()){}
+
+        SendPauseData();
         RoutineIteration++;
         RoutineState = 1;
+        SetZPos(ZSyncStep);
       }
       break;
 
@@ -423,6 +446,7 @@ void UpdateRoutine(bool isMoving)
       XPulseDelay = 4;
       YPulseDelay = 9;
       SetXYPos(1900,485);
+      SetZPos(150);
       RoutineState++;
       break;
     
@@ -629,10 +653,19 @@ void UpdateRoutine(bool isMoving)
       SetZPos(250);
       RoutineState++;
       break;
-    
+
     case 36:
+      XPulseDelay++;
+      YPulseDelay--;
+      ZPulseDelay = 1;
+      SetXYPos(1750,900);
+      SetZPos(120);
+      RoutineState++;
+      break;
+    
+    case 37:
       SetXYPos(1812,816);
-      SetZPos(ZSyncStep);
+      SetZPos(400);
       RoutineState = 0;
       break;
   }

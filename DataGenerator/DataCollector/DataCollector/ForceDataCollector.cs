@@ -44,6 +44,8 @@ namespace DataCollector
 
         public static Dictionary<uint, ForceInputDatum> ForceData = new Dictionary<uint, ForceInputDatum>();
 
+        private static bool Paused = false;
+
         const double MaxVoltage = 5000; //mV
         const int MaxInput = 1023;
         const int ResistorValue = 10000; //Ohms
@@ -82,7 +84,7 @@ namespace DataCollector
                 foreach (byte b in data)
                 {
                     //Console.WriteLine(b);
-                    RecievedData.Enqueue(b);
+                    if(!Paused) RecievedData.Enqueue(b);
                 }
             }
             if (RecievedData.Count >= 20)

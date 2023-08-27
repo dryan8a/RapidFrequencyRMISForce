@@ -58,6 +58,8 @@ namespace DataCollector
         public static Dictionary<uint, KinematicInputDatum> KinematicData = new Dictionary<uint, KinematicInputDatum>();
 
         private static int EndSequenceCount = 0;
+        private static int PauseSequenceCount = 0;
+        private static bool Paused = false;
 
         public const ushort XMin = 1100;
         public const ushort YMin = 300;
@@ -90,9 +92,19 @@ namespace DataCollector
                 {
                     if (b == 0xFF) EndSequenceCount++;
                     else EndSequenceCount = 0;
+                    if (b == 0xFE) PauseSequenceCount++;
+                    else PauseSequenceCount = 0;
+                    
+
+                    if (PauseSequenceCount >= 4)
+                    {
+                        PauseSequenceCount = 0;
+                        Paused = !Paused;
+                        break;
+                    }
 
                     //Console.WriteLine(b);
-                    RecievedData.Enqueue(b);
+                    if (!Paused) RecievedData.Enqueue(b);
 
                     if (EndSequenceCount >= 4)
                     {
