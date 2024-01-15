@@ -1,5 +1,5 @@
-# PioneerAcademics2023
+# Improving Frequency of RMIS Force Estimation using Neural Networks
 
-Code for my Pioneer Academics Project on the increasing frequency of force estimations in Robot-Assisted Minimally Invasive Surgery.
+Including Neural Net model code, data collection code, graphs, generated data, and 3D models
 
-Code for data collection code is largely specific to surgical-robot-simulation setup. See the paper for details.
+Data collection code is largely specific to surgical-robot-simulation setup. See the paper for details.
