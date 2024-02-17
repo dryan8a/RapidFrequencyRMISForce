@@ -13,18 +13,13 @@ namespace DataCollector
         public ushort XPos;
         public ushort YPos;
         public ushort ZPos;
-        public sbyte XVel;
-        public sbyte YVel;
-        public sbyte ZVel;
+
         public KinematicInputDatum() { }
-        public KinematicInputDatum(ushort xPos,ushort yPos,ushort zPos,sbyte xVel,sbyte yVel,sbyte zVel)
+        public KinematicInputDatum(ushort xPos,ushort yPos,ushort zPos)
         {
             XPos = xPos;
             YPos = yPos;
             ZPos = zPos;
-            XVel = xVel;
-            YVel = yVel;
-            ZVel = zVel;
         }
     }
     public struct KinematicDatum
@@ -45,11 +40,20 @@ namespace DataCollector
             YVel = yVel;
             ZVel = zVel;
         }
+        public KinematicDatum(KinematicInputDatum inputDatum, double xVel, double yVel, double zVel)
+        {
+            XPos = inputDatum.XPos;
+            YPos = inputDatum.YPos;
+            ZPos = inputDatum.ZPos;
+            XVel = xVel;
+            YVel = yVel;
+            ZVel = zVel;
+        }
     }
 
     public static class KinematicDataCollector
     {
-        static SerialPort MotorSerialPort = new SerialPort("COM3", 115200, Parity.None, 8, StopBits.One);
+        static SerialPort MotorSerialPort = new SerialPort("COM5", 115200, Parity.None, 8, StopBits.One);
         static Queue<byte> RecievedData = new Queue<byte>();
 
         public static bool IsOpen => MotorSerialPort.IsOpen;
@@ -122,7 +126,7 @@ namespace DataCollector
                 }
             }
 
-            if (RecievedData.Count >= 13)
+            if (RecievedData.Count >= 10)
             {
                 isTrying = true;
 
@@ -141,27 +145,29 @@ namespace DataCollector
                 ushort zPos = (ushort)(RecievedData.Dequeue() << 8);
                 zPos += RecievedData.Dequeue();
 
-                sbyte xVel = (sbyte)RecievedData.Dequeue();
-                sbyte yVel = (sbyte)RecievedData.Dequeue();
-                sbyte zVel = (sbyte)RecievedData.Dequeue();
+                //Hardware "velocity"
+                //sbyte xVel = (sbyte)RecievedData.Dequeue();
+                //sbyte yVel = (sbyte)RecievedData.Dequeue();
+                //sbyte zVel = (sbyte)RecievedData.Dequeue();
 
-                KinematicData.Add(timestamp,new KinematicInputDatum(xPos,yPos,zPos,xVel,yVel,zVel));
+                KinematicData.Add(timestamp,new KinematicInputDatum(xPos,yPos,zPos));
                 Timestamps.Add(timestamp);
             }
 
             return isTrying;
         }
 
-        public static KinematicDatum InputToKinematic(KinematicInputDatum input)
-        {
-            var xPos = (ushort)(input.XPos - XMin);
-            var yPos = (ushort)(input.YPos - YMin);
+        //old hardware "velcoity" conversion
+        //public static KinematicDatum InputToKinematic(KinematicInputDatum input)
+        //{
+        //    var xPos = (ushort)(input.XPos - XMin);
+        //    var yPos = (ushort)(input.YPos - YMin);
 
-            var xVel = input.XVel == 0 ? 0 : 1.0 / input.XVel;
-            var yVel = input.YVel == 0 ? 0 : 1.0 / input.YVel;
-            var zVel = input.ZVel == 0 ? 0 : 1.0 / input.ZVel;
+        //    var xVel = input.XVel == 0 ? 0 : 1.0 / input.XVel;
+        //    var yVel = input.YVel == 0 ? 0 : 1.0 / input.YVel;
+        //    var zVel = input.ZVel == 0 ? 0 : 1.0 / input.ZVel;
 
-            return new KinematicDatum(xPos, yPos, input.ZPos, xVel, yVel, zVel);
-        }
+        //    return new KinematicDatum(xPos, yPos, input.ZPos, xVel, yVel, zVel);
+        //}
     }
 }

@@ -1,5 +1,7 @@
 //Pins
+
 const byte XStep = 2;
+
 const byte YStep = 3;
 const byte ZStep = 4;
 const byte XDir = 5;
@@ -51,7 +53,7 @@ const short ZSyncStep = 220;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
-const short RoutineCount = 10;
+const short RoutineCount = 1;
 
 long sendIntervalStart;
 long programStart;
@@ -693,9 +695,10 @@ void SendAllKinematicData()
   Serial.write(CurrentZPos >> 8);
   Serial.write(CurrentZPos); 
 
-  Serial.write(CurrentXVel);
-  Serial.write(CurrentYVel);
-  Serial.write(CurrentZVel);
+  //Serial.write(CurrentXVel);
+  //Serial.write(CurrentYVel);
+  //Serial.write(CurrentZVel);
+
   /*
   Serial.print(CurrentXPos);
   Serial.print(' ');

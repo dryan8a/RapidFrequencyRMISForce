@@ -23,12 +23,15 @@ namespace DataCollector
 
     public struct NNTrainingDatum
     {
+        public uint Timestamp;
         public KinematicDatum CurrKinematicDatum;
+        public ForceDatum PrevTrueForceDatum;
         public ForceDatum PrevForceDatum;
         public ForceDatum ForceDatumToPredict;
 
-        public NNTrainingDatum(KinematicDatum currKinematicDatum, ForceDatum prevForceDatum, ForceDatum forceDatumToPredict)
+        public NNTrainingDatum(uint timestamp, KinematicDatum currKinematicDatum, ForceDatum prevForceDatum, ForceDatum forceDatumToPredict)
         {
+            Timestamp = timestamp;
             CurrKinematicDatum = currKinematicDatum;
             PrevForceDatum = prevForceDatum;
             ForceDatumToPredict = forceDatumToPredict;
@@ -60,7 +63,7 @@ namespace DataCollector
         {
             foreach(NNTrainingDatum datum in TrainingData)
             {
-                outputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+                outputWriter.Write($"{datum.Timestamp} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
             }
         }
 
@@ -78,7 +81,7 @@ namespace DataCollector
 
                 var datum = TrainingData[indexToRemove];
 
-                ranOutputWriter.Write($"{datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+                ranOutputWriter.Write($"{datum.Timestamp} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
 
                 //ranNormOutputWriter.Write($"");
 
@@ -91,7 +94,7 @@ namespace DataCollector
             foreach(var forDatumPair in ForceDataCollector.ForceData)
             {
                 var timestampIndex = GetClosestKinematicTimestampIndex(forDatumPair.Key);
-                var kinDatum = KinematicDataCollector.InputToKinematic(ApproximateCorrectedKinematicDatum(forDatumPair.Key, timestampIndex));
+                var kinDatum = ApproximateCorrectedKinematicDatum(forDatumPair.Key, timestampIndex);
 
                 var forDatum = ForceDataCollector.InputToForce(forDatumPair.Value);
 
@@ -105,7 +108,7 @@ namespace DataCollector
         {
             for(int i = 1; i < CombinedData.Count; i++) 
             {
-                TrainingData.Add(new NNTrainingDatum(CombinedData[i].KinematicDatum, CombinedData[i - 1].ForceDatum, CombinedData[i].ForceDatum));
+                TrainingData.Add(new NNTrainingDatum(CombinedData[i].Timestamp, CombinedData[i].KinematicDatum, CombinedData[i - 1].ForceDatum, CombinedData[i].ForceDatum));
             }
         }
 
@@ -126,28 +129,42 @@ namespace DataCollector
             }
         }
 
-        public static KinematicInputDatum ApproximateCorrectedKinematicDatum(uint timestamp, int ClosestKinematicTimestampIndex)
+        public static KinematicDatum ApproximateCorrectedKinematicDatum(uint timestamp, int ClosestKinematicTimestampIndex)
         {
+            uint befTimestamp, aftTimestamp, kinematicElapsed;
+            double xVel, yVel, zVel;
+
             if (ClosestKinematicTimestampIndex >= KinematicDataCollector.Timestamps.Count - 1)
             {
                 Console.WriteLine("More force than kin");
-                return KinematicDataCollector.KinematicData.Values.Last();
+
+                befTimestamp = KinematicDataCollector.Timestamps[^2]; //second to last timestamp
+                aftTimestamp = KinematicDataCollector.Timestamps[^1]; //last timestamp
+                kinematicElapsed = aftTimestamp - befTimestamp;
+
+                xVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].XPos - KinematicDataCollector.KinematicData[befTimestamp].XPos) / kinematicElapsed;
+                yVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].YPos - KinematicDataCollector.KinematicData[befTimestamp].YPos) / kinematicElapsed;
+                zVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].ZPos - KinematicDataCollector.KinematicData[befTimestamp].ZPos) / kinematicElapsed;
+
+                return new KinematicDatum(KinematicDataCollector.KinematicData[aftTimestamp], xVel,yVel,zVel);
             }
 
-            uint befTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex];
-            uint aftTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex + 1];
-            uint kinematicElapsed = aftTimestamp - befTimestamp;
+            befTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex];
+            aftTimestamp = KinematicDataCollector.Timestamps[ClosestKinematicTimestampIndex + 1];
+            kinematicElapsed = aftTimestamp - befTimestamp;
             uint timeDistanceToClosest = timestamp - befTimestamp;
 
             //approximates data at given time based on closest data
-            ushort xPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].XPos - KinematicDataCollector.KinematicData[befTimestamp].XPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].XPos);
-            ushort yPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].YPos - KinematicDataCollector.KinematicData[befTimestamp].YPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YPos);
-            ushort zPos = (ushort)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].ZPos - KinematicDataCollector.KinematicData[befTimestamp].ZPos) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZPos);
-            sbyte xVel = (sbyte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].XVel - KinematicDataCollector.KinematicData[befTimestamp].XVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].XVel);
-            sbyte yVel = (sbyte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].YVel - KinematicDataCollector.KinematicData[befTimestamp].YVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YVel);
-            sbyte zVel = (sbyte)(((double)(KinematicDataCollector.KinematicData[aftTimestamp].ZVel - KinematicDataCollector.KinematicData[befTimestamp].ZVel) / kinematicElapsed) * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZVel);
+            xVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].XPos - KinematicDataCollector.KinematicData[befTimestamp].XPos) / kinematicElapsed;
+            yVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].YPos - KinematicDataCollector.KinematicData[befTimestamp].YPos) / kinematicElapsed;
+            zVel = (double)(KinematicDataCollector.KinematicData[aftTimestamp].ZPos - KinematicDataCollector.KinematicData[befTimestamp].ZPos) / kinematicElapsed;
 
-            return new KinematicInputDatum(xPos,yPos, zPos, xVel, yVel, zVel);
+            ushort xPos = (ushort)(xVel * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].XPos);
+            ushort yPos = (ushort)(yVel * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].YPos);
+            ushort zPos = (ushort)(zVel * timeDistanceToClosest + KinematicDataCollector.KinematicData[befTimestamp].ZPos);
+            
+
+            return new KinematicDatum(xPos,yPos, zPos, xVel, yVel, zVel);
         }
     }
 }
