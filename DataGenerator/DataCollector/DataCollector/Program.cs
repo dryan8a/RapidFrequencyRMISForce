@@ -45,7 +45,7 @@ namespace DataCollector
             DataSynchronizer.OutputData(outputWriter);
             outputWriter.Close();
 
-            DataSynchronizer.CompileTrainingData();
+            DataSynchronizer.CompileTrainingData(33333); //interval at 30Hz for ground truth
 
             StreamWriter trainingWriter = new StreamWriter(TrainingPath);
             DataSynchronizer.OutputTrainingData(trainingWriter);
@@ -53,7 +53,7 @@ namespace DataCollector
 
             StreamWriter ranTrainingWriter = new StreamWriter(RanTrainingPath);
             StreamWriter ranNormTrainingWriter = new StreamWriter(RanNormTrainingPath);
-            //DataSynchronizer.OutputRandomizedTrainingData(ranTrainingWriter, ranNormTrainingWriter);
+            DataSynchronizer.OutputRandomizedTrainingData(ranTrainingWriter, ranNormTrainingWriter);
             ranTrainingWriter.Close();
             ranNormTrainingWriter.Close();
             

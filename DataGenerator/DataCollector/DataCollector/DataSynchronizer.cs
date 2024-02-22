@@ -23,18 +23,19 @@ namespace DataCollector
 
     public struct NNTrainingDatum
     {
-        public uint Timestamp;
+        public uint TrueForceElapsedTime;
         public KinematicDatum CurrKinematicDatum;
-        public ForceDatum PrevTrueForceDatum;
+        public ForceDatum PrevTrueForceDatum;   //most recent ground truth value
         public ForceDatum PrevForceDatum;
         public ForceDatum ForceDatumToPredict;
 
-        public NNTrainingDatum(uint timestamp, KinematicDatum currKinematicDatum, ForceDatum prevForceDatum, ForceDatum forceDatumToPredict)
+        public NNTrainingDatum(uint trueForceElapsedTime, KinematicDatum currKinematicDatum, ForceDatum prevTrueForceDatum, ForceDatum prevForceDatum, ForceDatum forceDatumToPredict)
         {
-            Timestamp = timestamp;
+            TrueForceElapsedTime = trueForceElapsedTime;
             CurrKinematicDatum = currKinematicDatum;
             PrevForceDatum = prevForceDatum;
             ForceDatumToPredict = forceDatumToPredict;
+            PrevTrueForceDatum = prevTrueForceDatum;
         }
 
     }
@@ -63,7 +64,7 @@ namespace DataCollector
         {
             foreach(NNTrainingDatum datum in TrainingData)
             {
-                outputWriter.Write($"{datum.Timestamp} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+                outputWriter.Write($"{datum.TrueForceElapsedTime} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevTrueForceDatum.XForce} {datum.PrevTrueForceDatum.YForce} {datum.PrevTrueForceDatum.ZForce} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
             }
         }
 
@@ -81,7 +82,7 @@ namespace DataCollector
 
                 var datum = TrainingData[indexToRemove];
 
-                ranOutputWriter.Write($"{datum.Timestamp} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
+                ranOutputWriter.Write($"{datum.TrueForceElapsedTime} {datum.CurrKinematicDatum.XPos} {datum.CurrKinematicDatum.YPos} {datum.CurrKinematicDatum.ZPos} {datum.CurrKinematicDatum.XVel} {datum.CurrKinematicDatum.YVel} {datum.CurrKinematicDatum.ZVel} {datum.PrevTrueForceDatum.XForce} {datum.PrevTrueForceDatum.YForce} {datum.PrevTrueForceDatum.ZForce} {datum.PrevForceDatum.XForce} {datum.PrevForceDatum.YForce} {datum.PrevForceDatum.ZForce} {datum.ForceDatumToPredict.XForce} {datum.ForceDatumToPredict.YForce} {datum.ForceDatumToPredict.ZForce}\n");
 
                 //ranNormOutputWriter.Write($"");
 
@@ -104,11 +105,20 @@ namespace DataCollector
             }
         }
 
-        public static void CompileTrainingData()
+        /// <summary>
+        /// Compiles training data after being synced into the Neural Network Training data format
+        /// </summary>
+        /// <param name="groundTruthInterval">in microseconds</param>
+        public static void CompileTrainingData(uint groundTruthInterval)
         {
+            int currentGroundTruthIndex = 0;
             for(int i = 1; i < CombinedData.Count; i++) 
             {
-                TrainingData.Add(new NNTrainingDatum(CombinedData[i].Timestamp, CombinedData[i].KinematicDatum, CombinedData[i - 1].ForceDatum, CombinedData[i].ForceDatum));
+                if (CombinedData[i].Timestamp - CombinedData[currentGroundTruthIndex].Timestamp > groundTruthInterval)
+                {
+                    currentGroundTruthIndex = i - 1;
+                }
+                TrainingData.Add(new NNTrainingDatum(CombinedData[i].Timestamp - CombinedData[currentGroundTruthIndex].Timestamp, CombinedData[i].KinematicDatum, CombinedData[currentGroundTruthIndex].ForceDatum, CombinedData[i - 1].ForceDatum, CombinedData[i].ForceDatum));
             }
         }
 

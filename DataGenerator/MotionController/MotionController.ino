@@ -53,7 +53,7 @@ const short ZSyncStep = 220;
 
 short RoutineState = 0;
 short RoutineIteration = 0;
-const short RoutineCount = 1;
+const short RoutineCount = 10;
 
 long sendIntervalStart;
 long programStart;

@@ -70,7 +70,7 @@ namespace DataCollector
         public static void TogglePause()
         {
             Paused = !Paused;
-            RecievedData.Clear();
+            //RecievedData.Clear();
             PostPauseCount = 0;
             FoundNonZero = false;
         }
@@ -108,6 +108,12 @@ namespace DataCollector
                         FoundNonZero = true;
                     }
                 }
+            }
+
+            if (Paused && RecievedData.Count > 0 && RecievedData.Count < 20)
+            {
+                Console.WriteLine("Force Data Recieved Cleared");
+                RecievedData.Clear();
             }
 
             if (RecievedData.Count >= 20)
