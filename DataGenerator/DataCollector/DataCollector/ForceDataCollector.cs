@@ -79,11 +79,15 @@ namespace DataCollector
         {
             bool isTrying = false;
 
-            if (ForceSerialPort.IsOpen && ForceSerialPort.BytesToRead > 0)
+            if (ForceSerialPort.IsOpen && ForceSerialPort.BytesToRead >= 20)
             {
                 isTrying = true;
 
-                byte[] data = new byte[ForceSerialPort.BytesToRead];
+                int div, rem;
+
+                (div, rem) = Math.DivRem(ForceSerialPort.BytesToRead, 20);
+
+                byte[] data = new byte[div*20];
                 ForceSerialPort.Read(data, 0, data.Length);
 
                 if (ForceData.Count == 0 && RecievedData.Count == 0 && data[0] == 128)
@@ -110,11 +114,11 @@ namespace DataCollector
                 }
             }
 
-            if (Paused && RecievedData.Count > 0 && RecievedData.Count < 20)
-            {
-                Console.WriteLine("Force Data Recieved Cleared");
-                RecievedData.Clear();
-            }
+            //if (Paused && RecievedData.Count > 0 && RecievedData.Count < 20)
+            //{
+            //    Console.WriteLine("Force Data Recieved Cleared");
+            //    RecievedData.Clear();
+            //}
 
             if (RecievedData.Count >= 20)
             {
