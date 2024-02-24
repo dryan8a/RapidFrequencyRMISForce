@@ -78,11 +78,11 @@ namespace DataCollector
         public static bool TryAppendData()
         {
             bool isTrying = false;
+            
+            if(ForceSerialPort.IsOpen && ForceSerialPort.BytesToRead > 0) isTrying = true;
 
             if (ForceSerialPort.IsOpen && ForceSerialPort.BytesToRead >= 20)
             {
-                isTrying = true;
-
                 int div, rem;
 
                 (div, rem) = Math.DivRem(ForceSerialPort.BytesToRead, 20);

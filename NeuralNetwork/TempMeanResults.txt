@@ -1,6 +1,15 @@
+PIONEER BEST VALUES
 Single Estimation Test MAE: 0.035379404945682466
 Single Estimation Test MSE(Loss): 0.0068481666164986596
 Feedback Estimation Test MAE: 0.17594525192146046
 Feedback Estimation Test MSE(Loss): 0.22563101298791677
 Test Prediction Mean Speed: 388.78388343031445
 Test Prediction Frequency: 2572.12308076355694
+
+FIXED VELOCITY/PREVIOUS GROUND TRUTH
+Single Estimation Test MAE: 0.04787495894950185
+Single Estimation Test MSE(Loss): 0.015358964985029701
+Feedback Estimation Test MAE: 0.04478741685144262
+Feedback Estimation Test MSE(Loss): 0.01351890806750718
+Test Prediction Mean Speed: 384.48746715967957
+Test Prediction Frequency: 2600.865009690147
