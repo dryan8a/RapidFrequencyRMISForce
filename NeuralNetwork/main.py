@@ -53,22 +53,17 @@ print(outputTrainData.__len__())
 print(inputTestData.__len__())
 print(outputTestData.__len__())
 print(inputFeedbackTestData.__len__())
-print(outputFeedbackTestData.__len__())
-
-''' Best Configurations:
-    Dense 7, Dense 3, Epochs 200, Batch size 5: loss 0.0077, accuracy 0.987, mean absolute error 0.0299, 750us/step 
-    Dense 8, Dense 3, Epochs 200, Batch size 5: loss 0.0069, accuracy 0.9944, mean absolute error 0.0251, 750us/step 
-'''
+print(outputFeedbackTestData.__len__()) 
 
 
-#MODEL CREATION/TRAINING
+#MODEL CREATION/TRAINING  
 model = Sequential()
-model.add(Dense(13, input_shape=(13,), activation='relu'))
+model.add(Dense(12, input_shape=(13,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
 
-history = model.fit(inputTrainData, outputTrainData, epochs=50, batch_size = 5)
+history = model.fit(inputTrainData, outputTrainData, epochs=100, batch_size = 5)
 
 
 speedResults = list()

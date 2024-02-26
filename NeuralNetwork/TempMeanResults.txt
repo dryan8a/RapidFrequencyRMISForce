@@ -7,9 +7,51 @@ Test Prediction Mean Speed: 388.78388343031445
 Test Prediction Frequency: 2572.12308076355694
 
 FIXED VELOCITY/PREVIOUS GROUND TRUTH
-Single Estimation Test MAE: 0.04787495894950185
-Single Estimation Test MSE(Loss): 0.015358964985029701
-Feedback Estimation Test MAE: 0.04478741685144262
-Feedback Estimation Test MSE(Loss): 0.01351890806750718
-Test Prediction Mean Speed: 384.48746715967957
-Test Prediction Frequency: 2600.865009690147
+13,15,3
+Single Estimation Test MAE: 0.052520217738052495
+Single Estimation Test MSE(Loss): 0.012642113212478245
+Feedback Estimation Test MAE: 0.0493839353679943
+Feedback Estimation Test MSE(Loss): 0.010991336851727485
+Test Prediction Mean Speed: 404.92515325483987
+Test Prediction Frequency: 2469.592199846991
+
+13,14,3
+Single Estimation Test MAE: 0.03394604028921498
+Single Estimation Test MSE(Loss): 0.007085514258301224
+Feedback Estimation Test MAE: 0.031663348345338634
+Feedback Estimation Test MSE(Loss): 0.005658738236327462
+Test Prediction Mean Speed: 384.1375644643366
+Test Prediction Frequency: 2603.234082025946
+
+13,13,3
+Single Estimation Test MAE: 0.0403727836502917
+Single Estimation Test MSE(Loss): 0.006977994102669687
+Feedback Estimation Test MAE: 0.03884232026163532
+Feedback Estimation Test MSE(Loss): 0.005879658331297875
+Test Prediction Mean Speed: 391.75982777075114
+Test Prediction Frequency: 2552.5843364041325
+
+
+13,12,3
+Single Estimation Test MAE: 0.024523870017236975
+Single Estimation Test MSE(Loss): 0.006166123047502172
+Feedback Estimation Test MAE: 0.02395842525486314
+Feedback Estimation Test MSE(Loss): 0.005159126231399933
+Test Prediction Mean Speed: 381.6128442152381
+Test Prediction Frequency: 2620.4568718236796
+
+13,11,3
+Single Estimation Test MAE: 0.028370484256765482
+Single Estimation Test MSE(Loss): 0.0063360686240582055
+Feedback Estimation Test MAE: 0.026290634715839187
+Feedback Estimation Test MSE(Loss): 0.00490400345019457
+Test Prediction Mean Speed: 382.21761700885423
+Test Prediction Frequency: 2616.310592446697
+
+13,10,3
+Single Estimation Test MAE: 0.07851900075490435
+Single Estimation Test MSE(Loss): 0.04825788311154885
+Feedback Estimation Test MAE: 0.07240204369826729
+Feedback Estimation Test MSE(Loss): 0.03656508119779615
+Test Prediction Mean Speed: 429.16838571567723
+Test Prediction Frequency: 2330.0877540930915
