@@ -10,6 +10,9 @@ import time
 def predict(model, input):
     return model(input)
 
+#THIS FILE IS FOR ABLATION STUDY
+print("ABLATION STUDY")
+
 #DATA LOADING
 datasetFile = open("RandomizedTrainingData.txt", "r")
 datasetLines = datasetFile.readlines()
@@ -23,8 +26,9 @@ trainAmount = datasetLines.__len__() * 0.9
 
 for i in range(0,datasetLines.__len__()):
     values = datasetLines[i].split(' ')
+
     #TrueForceElapsedTime, CurrXPos, CurrYPos, CurrZPos, CurrXVel, Curr.YVel, CurrZVel, PrevTrueXForce, PrevTrueYForce, PrevTrueZForce, PrevXForce, PrevYForce, PrevZForce
-    inputDatum = (float(values[0])/33333, float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]), float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[0])/33333, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     if i < trainAmount:
         inputTrainData.append(inputDatum)
@@ -33,7 +37,7 @@ for i in range(0,datasetLines.__len__()):
         inputTestData.append(inputDatum)
         outputTestData.append(outputDatum)
 
-orderedDatasetFile = open("TrainingData.txt", "r")
+orderedDatasetFile = open("TrainingData.txt", "r") 
 orderedDatasetLines = orderedDatasetFile.readlines()
 
 inputFeedbackTestData = list()
@@ -41,7 +45,7 @@ outputFeedbackTestData = list()
 
 for i in range(0,inputTestData.__len__()):
     values = orderedDatasetLines[i].split(' ')
-    inputDatum = (float(values[0])/33333, float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]), float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[0])/33333, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     inputFeedbackTestData.append(inputDatum)
     outputFeedbackTestData.append(outputDatum)
@@ -59,7 +63,7 @@ print(outputFeedbackTestData.__len__())
 
 #MODEL CREATION/TRAINING  
 model = Sequential()
-model.add(Dense(12, input_shape=(13,), activation='relu'))
+model.add(Dense(12, input_shape=(7,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
@@ -105,7 +109,7 @@ prevPrediction = ()
 for i in range(0,inputFeedbackTestData.__len__()):
     inputCopy = inputFeedbackTestData[i]
     if inputCopy[0] > 3000:
-        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], inputCopy[6], inputCopy[7], inputCopy[8], inputCopy[9], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
+        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
     input = numpy.array(inputCopy).reshape(1,-1)
     startTime = time.perf_counter_ns()
     prediction = predict(model,input)
@@ -174,8 +178,9 @@ plt.ylabel('squared error')
 plt.xlabel('prediction')
 plt.show(block=True)
 
-plt.scatter(x=range(1,speedResults.__len__()+1), y=speedResults, s=0.5)
+
+""" plt.scatter(x=range(1,speedResults.__len__()+1), y=speedResults, s=0.5)
 plt.title('Estimation Speed')
 plt.ylabel('Speed (microseconds)')
 plt.xlabel('prediction')
-plt.show(block=True)
+plt.show(block=True) """
