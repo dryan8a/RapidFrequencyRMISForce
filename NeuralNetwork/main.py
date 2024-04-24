@@ -1,4 +1,6 @@
 import numpy
+import math
+import statistics
 from tensorflow import metrics
 import tensorflow as tf
 from keras.models import Sequential
@@ -75,6 +77,8 @@ singleMSEResults = list()
 singleMAEResults = list()
 singleMSE = 0.0
 singleMAE = 0.0
+singleMSESqr = 0.0
+singleMAESqr = 0.0
 for i in range(0,inputTestData.__len__()):
     input = numpy.asarray(inputTestData[i]).reshape(1,-1)
     startTime = time.perf_counter_ns()
@@ -87,20 +91,28 @@ for i in range(0,inputTestData.__len__()):
     singleMAE += mean_absolute_error
     singleMSE += mean_square_error
 
+    singleMAESqr += (mean_absolute_error * mean_absolute_error)
+    singleMSESqr += (mean_square_error * mean_square_error)
+
     singleMAEResults.append(mean_absolute_error)
     singleMSEResults.append(mean_square_error)
 
     elapsedMicro = float(endTime - startTime) / 1000.0
     meanSpeed += elapsedMicro
     speedResults.append(elapsedMicro)
+singleMAEstddev = math.sqrt((singleMAESqr - (singleMAE * singleMAE / inputTestData.__len__())) / inputTestData.__len__())
+singleMSEstddev = math.sqrt((singleMSESqr - (singleMSE * singleMSE / inputTestData.__len__())) / inputTestData.__len__())
 singleMAE /= inputTestData.__len__()
 singleMSE /= inputTestData.__len__()
+
 
 #FEEDBACK ESTIMATION TEST
 feedbackMSEResults = list()
 feedbackMAEResults = list()
 feedbackMSE = 0.0
 feedbackMAE = 0.0
+feedbackMSESqr = 0.0
+feedbackMAESqr = 0.0
 prevPrediction = ()
 for i in range(0,inputFeedbackTestData.__len__()):
     inputCopy = inputFeedbackTestData[i]
@@ -117,6 +129,9 @@ for i in range(0,inputFeedbackTestData.__len__()):
     feedbackMAE += mean_absolute_error
     feedbackMSE += mean_square_error
 
+    feedbackMAESqr += (mean_absolute_error * mean_absolute_error)
+    feedbackMSESqr += (mean_square_error * mean_square_error)
+
     feedbackMAEResults.append(mean_absolute_error)
     feedbackMSEResults.append(mean_square_error)
 
@@ -124,6 +139,8 @@ for i in range(0,inputFeedbackTestData.__len__()):
     meanSpeed += elapsedMicro
     speedResults.append(elapsedMicro)
     prevPrediction = prediction
+feedbackMAEstddev = math.sqrt((feedbackMAESqr - (feedbackMAE * feedbackMAE / inputFeedbackTestData.__len__())) / inputFeedbackTestData.__len__())
+feedbackMSEstddev = math.sqrt((feedbackMSESqr - (feedbackMSE * feedbackMSE / inputFeedbackTestData.__len__())) / inputFeedbackTestData.__len__())
 feedbackMAE /= inputFeedbackTestData.__len__()
 feedbackMSE /= inputFeedbackTestData.__len__()
 
@@ -132,10 +149,22 @@ meanFrequency = 1000000.0 / meanSpeed
 
 #RESULT OUTPUT
 print("Single Estimation Test MAE: " + str(singleMAE))
+print("Single Estimation Test MAE StdDev: " + str(singleMAEstddev) + " " + str(statistics.stdev(singleMAEResults)))
+print("Single Estimation Test MAE Median: " + str(statistics.median(singleMAEResults)))
+
 print("Single Estimation Test MSE(Loss): " + str(singleMSE))
+print("Single Estimation Test MSE StdDev: " + str(singleMSEstddev) + " " + str(statistics.stdev(singleMSEResults)))
+print("Single Estimation Test MSE Median: " + str(statistics.median(singleMSEResults)))
+
 print("Feedback Estimation Test MAE: " + str(feedbackMAE))
+print("Feedback Estimation Test MAE StdDev: " + str(feedbackMAEstddev) + " " + str(statistics.stdev(feedbackMAEResults)))
+print("Feedback Estimation Test MAE Median: " + str(statistics.median(feedbackMAEResults)))
+
 print("Feedback Estimation Test MSE(Loss): " + str(feedbackMSE))
-print("Test Prediction Mean Speed: " + str(meanSpeed))
+print("Feedback Estimation Test MSE StdDev: " + str(feedbackMSEstddev) + " " + str(statistics.stdev(feedbackMSEResults)))
+print("Feedback Estimation Test MSE Median: " + str(statistics.median(feedbackMSEResults)))
+
+print("Test Prediction Mean Speed: " + str(meanSpeed)) 
 print("Test Prediction Frequency: " + str(meanFrequency))
 
 plt.plot(history.history['loss'])

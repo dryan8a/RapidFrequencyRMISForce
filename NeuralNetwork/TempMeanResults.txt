@@ -9,21 +9,37 @@ Test Prediction Frequency: 2572.12308076355694
 FIXED VELOCITY/PREVIOUS GROUND TRUTH
 13,12,3
 Single Estimation Test MAE: 0.024523870017236975
+Single Estimation Test MAE StdDev: 0.05480921464156633 
+Single Estimation Test MAE Median: 0.01084813
 Single Estimation Test MSE(Loss): 0.006166123047502172
+Single Estimation Test MSE StdDev: 0.034756720259684945 
+Single Estimation Test MSE Median: 0.00021571964
 Feedback Estimation Test MAE: 0.02395842525486314
+Feedback Estimation Test MAE StdDev: 0.052384878556807915 
+Feedback Estimation Test MAE Median: 0.009407504
 Feedback Estimation Test MSE(Loss): 0.005159126231399933
+Feedback Estimation Test MSE StdDev: 0.027541525722657584
+Feedback Estimation Test MSE Median: 0.00016196152
 Test Prediction Mean Speed: 381.6128442152381
 Test Prediction Frequency: 2620.4568718236796
 _____________________________________________________________________________________________________________________________
 ABLATION STUDY
 
 REMOVE POSITION
-Single Estimation Test MAE: 0.019931379111844005
-Single Estimation Test MSE(Loss): 0.0052038146813666985
-Feedback Estimation Test MAE: 0.018698265996600856
-Feedback Estimation Test MSE(Loss): 0.004067123012543289
-Test Prediction Mean Speed: 383.1167655930746
-Test Prediction Frequency: 2610.1702922135873
+Single Estimation Test MAE: 0.021964892698274032
+Single Estimation Test MAE StdDev: 0.03862497126405874 0.03862685060460658
+Single Estimation Test MAE Median: 0.009189361
+Single Estimation Test MSE(Loss): 0.005243485717854378
+Single Estimation Test MSE StdDev: 0.03225745586378266 0.032259025392585766
+Single Estimation Test MSE Median: 0.000112870184
+Feedback Estimation Test MAE: 0.021058484270309024
+Feedback Estimation Test MAE StdDev: 0.03376822261161077 0.03376986565802379
+Feedback Estimation Test MAE Median: 0.009088881
+Feedback Estimation Test MSE(Loss): 0.004087713325273265
+Feedback Estimation Test MSE StdDev: 0.022772686432246877 0.02277379441671648
+Feedback Estimation Test MSE Median: 0.00011173504
+Test Prediction Mean Speed: 382.93549674029475
+Test Prediction Frequency: 2611.405859504834
 
 REMOVE VELOCITY
 Single Estimation Test MAE: 0.05079397018922739
