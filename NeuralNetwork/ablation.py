@@ -120,7 +120,7 @@ prevPrediction = ()
 for i in range(0,inputFeedbackTestData.__len__()):
     inputCopy = inputFeedbackTestData[i]
     if inputCopy[0] > 3000:
-        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
+        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], inputCopy[6], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
     input = numpy.array(inputCopy).reshape(1,-1)
     startTime = time.perf_counter_ns()
     prediction = predict(model,input)
