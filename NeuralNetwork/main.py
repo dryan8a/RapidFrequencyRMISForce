@@ -7,6 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 import matplotlib.pyplot as plt
 import time
+import csv
 
 @tf.function
 def predict(model, input):
@@ -148,6 +149,12 @@ meanSpeed /= (2 * inputTestData.__len__())
 meanFrequency = 1000000.0 / meanSpeed
 
 #RESULT OUTPUT
+with open('TestError', 'w') as f:
+    write = csv.writer(f)
+    write.writerow(['Single MAE', 'Single MSE', 'Feedback MAE', 'Feedback MSE'])
+    for i in range(0,singleMAEResults.__len__()):
+        write.writerow([str(singleMAEResults[i]),str(singleMSEResults[i]),str(feedbackMAEResults[i]),str(feedbackMSEResults[i])])
+
 print("Single Estimation Test MAE: " + str(singleMAE))
 print("Single Estimation Test MAE StdDev: " + str(singleMAEstddev) + " " + str(statistics.stdev(singleMAEResults)))
 print("Single Estimation Test MAE Median: " + str(statistics.median(singleMAEResults)))
