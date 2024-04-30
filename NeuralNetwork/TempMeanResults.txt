@@ -9,16 +9,16 @@ Test Prediction Frequency: 2572.12308076355694
 FIXED VELOCITY/PREVIOUS GROUND TRUTH
 13,12,3
 Single Estimation Test MAE: 0.029823324923414708
-Single Estimation Test MAE StdDev: 0.04263423691228465 0.04263631129194858
+Single Estimation Test MAE StdDev: 0.04263423691228465
 Single Estimation Test MAE Median: 0.016292946
 Single Estimation Test MSE(Loss): 0.006255795683905643
-Single Estimation Test MSE StdDev: 0.033176921701735876 0.03317853590039756
+Single Estimation Test MSE StdDev: 0.033176921701735876
 Single Estimation Test MSE Median: 0.00040308197
 Feedback Estimation Test MAE: 0.027860221347844175
-Feedback Estimation Test MAE StdDev: 0.03734284110542911 0.03734465811905796
+Feedback Estimation Test MAE StdDev: 0.03734284110542911
 Feedback Estimation Test MAE Median: 0.012641389
 Feedback Estimation Test MSE(Loss): 0.004817377493652469
-Feedback Estimation Test MSE StdDev: 0.023869911086081726 0.02387107251644046
+Feedback Estimation Test MSE StdDev: 0.023869911086081726
 Feedback Estimation Test MSE Median: 0.00024452884
 Test Prediction Mean Speed: 388.13092828646285
 Test Prediction Frequency: 2576.450179878329
@@ -43,48 +43,48 @@ Test Prediction Frequency: 2581.5896759523466
 
 REMOVE VELOCITY
 Single Estimation Test MAE: 0.03451256760880166
-Single Estimation Test MAE StdDev: 0.054085888466814655 0.0540885200922225
+Single Estimation Test MAE StdDev: 0.054085888466814655
 Single Estimation Test MAE Median: 0.01097991
 Single Estimation Test MSE(Loss): 0.009078821338900676
-Single Estimation Test MSE StdDev: 0.03745111805709249 0.037452940198726366
+Single Estimation Test MSE StdDev: 0.03745111805709249
 Single Estimation Test MSE Median: 0.00017176638
 Feedback Estimation Test MAE: 0.035445566448712267
-Feedback Estimation Test MAE StdDev: 0.05613746309213847 0.05614019446306624
+Feedback Estimation Test MAE StdDev: 0.05613746309213847
 Feedback Estimation Test MAE Median: 0.007383482
 Feedback Estimation Test MSE(Loss): 0.009365604260447843
-Feedback Estimation Test MSE StdDev: 0.03287101077257147 0.032872610212924466
+Feedback Estimation Test MSE StdDev: 0.03287101077257147
 Feedback Estimation Test MSE Median: 7.320349e-05
 Test Prediction Mean Speed: 384.7549382115416
 Test Prediction Frequency: 2599.056959862049
 
 REMOVE KINEMATICS
 Single Estimation Test MAE: 0.022971598171133582
-Single Estimation Test MAE StdDev: 0.040699501770690566 0.04070148204831375
+Single Estimation Test MAE StdDev: 0.040699501770690566
 Single Estimation Test MAE Median: 0.0094549665
 Single Estimation Test MSE(Loss): 0.005385653349494222
-Single Estimation Test MSE StdDev: 0.03369811378630909 0.03369975344373976
+Single Estimation Test MSE StdDev: 0.03369811378630909
 Single Estimation Test MSE Median: 0.00011710281
 Feedback Estimation Test MAE: 0.021872784205767385
-Feedback Estimation Test MAE StdDev: 0.036608792323083096 0.036610573605774355
+Feedback Estimation Test MAE StdDev: 0.036608792323083096
 Feedback Estimation Test MAE Median: 0.008010106
 Feedback Estimation Test MSE(Loss): 0.0043058084412284136
-Feedback Estimation Test MSE StdDev: 0.025499027662068043 0.02550026828217199
+Feedback Estimation Test MSE StdDev: 0.025499027662068043
 Feedback Estimation Test MSE Median: 8.843674e-05
 Test Prediction Mean Speed: 382.8601732022973
 Test Prediction Frequency: 2611.919624953039
 
 REMOVE PREV GOUND TRUTH/ELAPSED TIME
 Single Estimation Test MAE: 0.029704639529047224
-Single Estimation Test MAE StdDev: 0.04905030645270754 0.04905269299397242
+Single Estimation Test MAE StdDev: 0.04905030645270754
 Single Estimation Test MAE Median: 0.0059613623
 Single Estimation Test MSE(Loss): 0.008648307954457623
-Single Estimation Test MSE StdDev: 0.03639915647973426 0.03640092751551832
+Single Estimation Test MSE StdDev: 0.03639915647973426 
 Single Estimation Test MSE Median: 5.5538356e-05
 Feedback Estimation Test MAE: 0.13726878331070783
-Feedback Estimation Test MAE StdDev: 0.18468295144515992 0.1846919372253027
+Feedback Estimation Test MAE StdDev: 0.18468295144515992 
 Feedback Estimation Test MAE Median: 0.0123906
 Feedback Estimation Test MSE(Loss): 0.13697266075641706
-Feedback Estimation Test MSE StdDev: 0.29481011397440005 0.29482445787071065
+Feedback Estimation Test MSE StdDev: 0.29481011397440005 
 Feedback Estimation Test MSE Median: 0.00031911308
 Test Prediction Mean Speed: 400.1571324316422
 Test Prediction Frequency: 2499.018307941387
