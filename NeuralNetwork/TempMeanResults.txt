@@ -22,6 +22,21 @@ Feedback Estimation Test MSE StdDev: 0.023869911086081726
 Feedback Estimation Test MSE Median: 0.00024452884
 Test Prediction Mean Speed: 388.13092828646285
 Test Prediction Frequency: 2576.450179878329
+
+Single Estimation Test MAE: 0.0309193494233746
+Single Estimation Test MAE StdDev: 0.04771630691906716 0.04771862862465237
+Single Estimation Test MAE Median: 0.01039035
+Single Estimation Test MSE(Loss): 0.0076338377621950355
+Single Estimation Test MSE StdDev: 0.033767671425168816 0.03376931442111406
+Single Estimation Test MSE Median: 0.00013567005
+Feedback Estimation Test MAE: 0.10497870438561747
+Feedback Estimation Test MAE StdDev: 0.16584483320680363 0.16585290260414506
+Feedback Estimation Test MAE Median: 0.012858034
+Feedback Estimation Test MSE(Loss): 0.09476856119637873
+Feedback Estimation Test MSE StdDev: 0.2520273095510894 0.25203957222038514
+Feedback Estimation Test MSE Median: 0.00024906392
+Test Prediction Mean Speed: 429.0536878466475
+Test Prediction Frequency: 2330.7106507319436
 _____________________________________________________________________________________________________________________________
 ABLATION STUDY
 
@@ -40,6 +55,37 @@ Feedback Estimation Test MSE StdDev: 0.023975841305323556
 Feedback Estimation Test MSE Median: 2.1047132e-05
 Test Prediction Mean Speed: 387.3582271090779
 Test Prediction Frequency: 2581.5896759523466
+
+Single Estimation Test MAE: 0.020776306871320517
+Single Estimation Test MAE StdDev: 0.04121417444072088 0.04121617969927942
+Single Estimation Test MAE Median: 0.005118567
+Single Estimation Test MSE(Loss): 0.0054016263404513595
+Single Estimation Test MSE StdDev: 0.03507481819564987 0.03507652483264193
+Single Estimation Test MSE Median: 3.7484646e-05
+Feedback Estimation Test MAE: 0.08429433745457914
+Feedback Estimation Test MAE StdDev: 0.09698449417080188 0.09698921307062125
+Feedback Estimation Test MAE Median: 0.06334747
+Feedback Estimation Test MSE(Loss): 0.03449655262122396
+Feedback Estimation Test MSE StdDev: 0.09695396502265313 0.09695868239775464
+Feedback Estimation Test MSE Median: 0.010654093
+Test Prediction Mean Speed: 409.6128198890719
+Test Prediction Frequency: 2441.329839898107
+
+REMOVE POSITION INCREASE VELOCITY
+Single Estimation Test MAE: 0.01846672517026924
+Single Estimation Test MAE StdDev: 0.041016960250649825 0.04101895596123169
+Single Estimation Test MAE Median: 0.0046102144
+Single Estimation Test MSE(Loss): 0.005335124296276071
+Single Estimation Test MSE StdDev: 0.03649526300549442 0.03649703881644021
+Single Estimation Test MSE Median: 2.7433149e-05
+Feedback Estimation Test MAE: 0.04696955209265884
+Feedback Estimation Test MAE StdDev: 0.08625917194663424 0.08626336898800671
+Feedback Estimation Test MAE Median: 0.008051173
+Feedback Estimation Test MSE(Loss): 0.023841700989094543
+Feedback Estimation Test MSE StdDev: 0.09047026975790734 0.09047467170841988
+Feedback Estimation Test MSE Median: 0.000109347755
+Test Prediction Mean Speed: 396.5886348156072
+Test Prediction Frequency: 2521.5044310711205
 
 REMOVE VELOCITY
 Single Estimation Test MAE: 0.03451256760880166
