@@ -66,7 +66,7 @@ print(outputFeedbackTestData.__len__())
 
 #MODEL CREATION/TRAINING  
 model = Sequential()
-model.add(Dense(12, input_shape=(10,), activation='relu'))
+model.add(Dense(9, input_shape=(10,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
@@ -154,7 +154,7 @@ meanSpeed /= (2 * inputTestData.__len__())
 meanFrequency = 1000000.0 / meanSpeed
 
 #RESULT OUTPUT
-with open('NoPositionBigVelocityTestError', 'w') as f:
+with open('NoPositionBigVelocityOptimalTestError', 'w') as f:
     write = csv.writer(f)
     write.writerow(['Single MAE', 'Single MSE', 'Feedback MAE', 'Feedback MSE'])
     for i in range(0,singleMAEResults.__len__()):
