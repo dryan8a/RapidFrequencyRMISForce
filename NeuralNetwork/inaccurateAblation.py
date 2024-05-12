@@ -40,7 +40,7 @@ trainAmount = datasetLines.__len__() * 0.9
 for i in range(0,datasetLines.__len__()):
     values = datasetLines[i].split(' ')
     #TrueForceElapsedTime, CurrXPos, CurrYPos, CurrZPos, CurrXVel, Curr.YVel, CurrZVel, PrevTrueXForce, PrevTrueYForce, PrevTrueZForce, PrevXForce, PrevYForce, PrevZForce 
-    inputDatum = (float(values[0])/33333, float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]), float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[0])/33333, float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     if i < trainAmount:
         inputTrainData.append(inputDatum)
@@ -58,7 +58,7 @@ outputFeedbackTestData = list()
 for i in range(0,inputTestData.__len__()):
     values = orderedDatasetLines[i].split(' ')
 
-    inputDatum = (float(values[0])/33333, float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]), float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[0])/33333, float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
     inputFeedbackTestData.append(inputDatum)
 
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
@@ -77,12 +77,12 @@ print(outputFeedbackTestData.__len__())
 
 #MODEL CREATION/TRAINING  
 model = Sequential()
-model.add(Dense(12, input_shape=(13,), activation='relu'))
+model.add(Dense(12, input_shape=(10,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
 
-history = model.fit(inputTrainData, outputTrainData, epochs=100, batch_size = 5)
+history = model.fit(inputTrainData, outputTrainData, epochs=50, batch_size = 5)
 
 for noiseIndex in range(0,noiseRange.__len__()):
     print("Test " + str(noiseIndex) + ", Noise: " + str(noiseRange[noiseIndex]))
@@ -90,18 +90,26 @@ for noiseIndex in range(0,noiseRange.__len__()):
     feedbackXForce = 0.0
     feedbackYForce = 0.0
     feedbackZForce = 0.0
-    for i in inputTestData.__len__():
-        prevForceInputTestData = (inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4], inputTestData[i][5], inputTestData[i][6], inputTestData[i][7], inputTestData[i][8], inputTestData[i][9], inputTestData[i][10] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][11] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][12] + makeNoise(noiseRange[noiseIndex]))
-        trueForceInputTestData = (inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4], inputTestData[i][5], inputTestData[i][6], inputTestData[i][7] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][8] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][9] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][10], inputTestData[i][11], inputTestData[i][12])
-        allForceInputTestData = (inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4], inputTestData[i][5], inputTestData[i][6], inputTestData[i][7] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][8] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][9] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][10] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][11] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][12] + makeNoise(noiseRange[noiseIndex]))
+    prevForceInputTestData = list()
+    trueForceInputTestData = list()
+    allForceInputTestData = list()
+    allForceInputFeedbackTestData = list()
 
-        if inputFeedbackTestData[i][0] <= 3000:
-            feedbackXForce = inputFeedbackTestData[i][10] + makeNoise(noiseRange[noiseIndex])
-            feedbackYForce = inputFeedbackTestData[i][11] + makeNoise(noiseRange[noiseIndex])
-            feedbackZForce = inputFeedbackTestData[i][12] + makeNoise(noiseRange[noiseIndex])
+    for i in range(0,inputTestData.__len__()):
+        prevForceInputTestData.append((inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4], inputTestData[i][5], inputTestData[i][6], inputTestData[i][7] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][8] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][9] + makeNoise(noiseRange[noiseIndex])))
+        trueForceInputTestData.append((inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][5] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][6] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][7], inputTestData[i][8], inputTestData[i][9]))
+        allForceInputTestData.append((inputTestData[i][0], inputTestData[i][1], inputTestData[i][2], inputTestData[i][3], inputTestData[i][4] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][5] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][6] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][7] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][8] + makeNoise(noiseRange[noiseIndex]), inputTestData[i][9] + makeNoise(noiseRange[noiseIndex])))
 
-        allForceInputFeedbackTestData = (inputFeedbackTestData[i][0], inputFeedbackTestData[i][1], inputFeedbackTestData[i][2], inputFeedbackTestData[i][3], inputFeedbackTestData[i][4], inputFeedbackTestData[i][5], inputFeedbackTestData[i][6], feedbackXForce, feedbackYForce, feedbackZForce, feedbackXForce, feedbackYForce, feedbackZForce)
+        if inputFeedbackTestData[i][0] <= 3000 / 33333:
+            feedbackXForce = inputFeedbackTestData[i][7] + makeNoise(noiseRange[noiseIndex])
+            feedbackYForce = inputFeedbackTestData[i][8] + makeNoise(noiseRange[noiseIndex])
+            feedbackZForce = inputFeedbackTestData[i][9] + makeNoise(noiseRange[noiseIndex])
 
+        allForceInputFeedbackTestData.append((inputFeedbackTestData[i][0], inputFeedbackTestData[i][1], inputFeedbackTestData[i][2], inputFeedbackTestData[i][3], feedbackXForce, feedbackYForce, feedbackZForce, feedbackXForce, feedbackYForce, feedbackZForce))
+    print(str(prevForceInputTestData[0]))
+    print(str(trueForceInputTestData[0]))
+    print(str(allForceInputTestData[0]))
+    print(str(allForceInputFeedbackTestData[0]) + ", " + str(allForceInputFeedbackTestData[1]))
     print("Noise generated")
 
     #PREV FORCE SINGLE ESTIMATION TEST
@@ -198,8 +206,8 @@ for noiseIndex in range(0,noiseRange.__len__()):
     prevPrediction = ()
     for i in range(0,allForceInputFeedbackTestData.__len__()):
         inputCopy = allForceInputFeedbackTestData[i]
-        if inputCopy[0] > 3000:
-            inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], inputCopy[6], inputCopy[7], inputCopy[8], inputCopy[9], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
+        if inputCopy[0] > 3000 / 33333:
+            inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], inputCopy[6], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
         input = numpy.array(inputCopy).reshape(1,-1)
         
         prediction = predict(model,input)
