@@ -31,7 +31,7 @@ for i in range(0,datasetLines.__len__()):
     values = datasetLines[i].split(' ')
 
     #TrueForceElapsedTime, CurrXPos, CurrYPos, CurrZPos, CurrXVel, Curr.YVel, CurrZVel, PrevTrueXForce, PrevTrueYForce, PrevTrueZForce, PrevXForce, PrevYForce, PrevZForce
-    inputDatum = (float(values[0])/33333, float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[1]), float(values[2]), float(values[3]), float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[10]), float(values[11]), float(values[12]))
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     if i < trainAmount:
         inputTrainData.append(inputDatum)
@@ -48,7 +48,7 @@ outputFeedbackTestData = list()
 
 for i in range(0,inputTestData.__len__()):
     values = orderedDatasetLines[i].split(' ')
-    inputDatum = (float(values[0])/33333, float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
+    inputDatum = (float(values[1]), float(values[2]), float(values[3]), float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[10]), float(values[11]), float(values[12]))
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     inputFeedbackTestData.append(inputDatum)
     outputFeedbackTestData.append(outputDatum)
@@ -66,12 +66,12 @@ print(outputFeedbackTestData.__len__())
 
 #MODEL CREATION/TRAINING  
 model = Sequential()
-model.add(Dense(9, input_shape=(10,), activation='relu'))
+model.add(Dense(12, input_shape=(9,), activation='relu'))
 model.add(Dense(3, activation='linear'))
 
 model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mean_absolute_error'])
 
-history = model.fit(inputTrainData, outputTrainData, epochs=100, batch_size = 5)
+history = model.fit(inputTrainData, outputTrainData, epochs=75, batch_size = 5)
 
 
 speedResults = list()
@@ -120,10 +120,10 @@ feedbackMAESqr = 0.0
 prevPrediction = ()
 for i in range(0,inputFeedbackTestData.__len__()):
     inputCopy = inputFeedbackTestData[i]
-    if inputCopy[0] > 3000 / 33333:
-        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], inputCopy[6], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
-    else:
-        print(str(inputCopy))
+    if i % 16 != 0: #inputCopy[0] > 3000 / 33333:
+        inputCopy = (inputCopy[0], inputCopy[1], inputCopy[2], inputCopy[3], inputCopy[4], inputCopy[5], prevPrediction.numpy()[0][0], prevPrediction.numpy()[0][1], prevPrediction.numpy()[0][2])
+    #else:
+        #print(str(inputCopy))
     input = numpy.array(inputCopy).reshape(1,-1)
     startTime = time.perf_counter_ns()
     prediction = predict(model,input)
@@ -154,7 +154,7 @@ meanSpeed /= (2 * inputTestData.__len__())
 meanFrequency = 1000000.0 / meanSpeed
 
 #RESULT OUTPUT
-with open('NoPositionBigVelocityOptimalTestError', 'w') as f:
+with open('BigVelocityNoGroundTruthTestError', 'w') as f:
     write = csv.writer(f)
     write.writerow(['Single MAE', 'Single MSE', 'Feedback MAE', 'Feedback MSE'])
     for i in range(0,singleMAEResults.__len__()):
