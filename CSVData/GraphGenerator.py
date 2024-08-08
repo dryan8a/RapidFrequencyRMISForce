@@ -28,7 +28,10 @@ match x:
         plt.axhline(y=0.06, color= "red", linestyle = 'dashed')
         plt.show()
     case 1:
-        window = 20
+        window = 500
+        iA0 = pd.read_csv("NoPositionBigVelocityTestError")
+        iA0.insert(1, "Smooth All Force Feedback MAE", iA0["Feedback MAE"].rolling(window).mean(), True)
+        iA0.dropna(inplace=True)
         iA20 = pd.read_csv("InaccurateAblationTestError0.012")
         iA20.insert(1,"Smooth All Force Feedback MAE", iA20["All Force Feedback MAE"].rolling(window).mean(), True)
         iA20.dropna(inplace=True)
@@ -44,7 +47,7 @@ match x:
         iA500 = pd.read_csv("InaccurateAblationTestError0.3")
         iA500.insert(1,"Smooth All Force Feedback MAE", iA500["All Force Feedback MAE"].rolling(window).mean(), True)
         iA500.dropna(inplace=True)
-        concat = pd.concat([iA20.assign(Noise="20%"), iA50.assign(Noise="50%"), iA100.assign(Noise="100%"), iA200.assign(Noise="200%"), iA500.assign(Noise="500%")])
+        concat = pd.concat([iA0.assign(Noise="0%"), iA20.assign(Noise="20%"), iA50.assign(Noise="50%"), iA100.assign(Noise="100%"), iA200.assign(Noise="200%"), iA500.assign(Noise="500%")])
 
         sns.set_style("ticks")
         sns.set_context("paper")
@@ -118,6 +121,9 @@ match x:
         noGT = pd.read_csv("BigVelocityNoGroundTruthTestError")
         randInput = pd.read_csv("RandomizedTrainingData.txt", sep=" ", names=["ET", "PosX", "PosY", "PosZ", "VelX", "VelY", "VelZ", "TFX", "TFY", "TFZ", "PFX", "PFY", "PFZ", "OFX", "OFY", "OFZ"], skiprows= lambda x: x < (102778 * 0.9))
         df = (randInput - randInput.min())/(randInput.max() - randInput.min())
+        print(df["ET"].max())
+        print(df["ET"].min())
+        #df.to_csv("normalizedRandTraining.csv")
         df.loc[-1] = ["","","","","","","","","","","","","","","",""]
         df.index = df.index + 1
         df.sort_index(inplace=True)
@@ -127,19 +133,28 @@ match x:
         df.drop(index=["PosX", "PosY", "PosZ", "OFX", "OFY", "OFZ"], level=1, inplace=True)
         df = df.reset_index(level=[0,1])
         df.columns = ["Input Number","Input Type", "Input Value"]
-        #aedf = pd.DataFrame(numpy.array(numpy.repeat(noPosition.dropna()["Single MAE"], 10), dtype=float)).reset_index([0])
+        df["Input Number"] = df["Input Number"].astype("float64")
+        df["Input Value"] = df["Input Value"].astype("float64")
+        aedf = pd.DataFrame(numpy.repeat(noPosition.dropna()["Single MAE"], 10)).reset_index([0])
         #aedf.columns = ["", "AE"]
-        #df = pd.concat([df, aedf["AE"]], axis=1)
+        df = pd.concat([df, aedf["Single MAE"]], axis=1)
         
         display(df)
 
         sns.set_style("ticks")
         sns.set_context("paper")
         palette = sns.color_palette("hls", 10)
-        sns.lmplot(data=df, x= "Input Number", y= "Input Value", hue="Input Type", palette=palette)
+
+        g = sns.FacetGrid(data=df, hue="Input Type", palette=palette)
+        g.map(plt.scatter, "Single MAE", "Input Value", s=15, alpha=.7)
+        #g.map(sns.regplot, "Single MAE", "Input Value", ci=None, robust=1)
+        #g.map(sns.residplot, "Single MAE", "Input Value", lowess=True)
 
         plt.title("")
         plt.xlabel("Absolute Error")
+        plt.xlim(0.00055, 1.05)
+        plt.xscale("log")
         plt.ylabel("Input Value")
+        plt.ylim(-0.003,1.003)
         plt.legend(title="Input Type")
         plt.show()
