@@ -6,8 +6,9 @@ import time
 import csv
 import seaborn as sns
 import pandas as pd
+from IPython.display import display
 
-x = 1
+x = 3
 
 match x:
     case 0:
@@ -27,7 +28,7 @@ match x:
         plt.axhline(y=0.06, color= "red", linestyle = 'dashed')
         plt.show()
     case 1:
-        window = 500
+        window = 20
         iA20 = pd.read_csv("InaccurateAblationTestError0.012")
         iA20.insert(1,"Smooth All Force Feedback MAE", iA20["All Force Feedback MAE"].rolling(window).mean(), True)
         iA20.dropna(inplace=True)
@@ -57,7 +58,7 @@ match x:
         plt.xlim(0,10277)
         plt.ylabel("Absolute Error (N)")
         plt.yscale("log")
-        plt.ylim(0.0000,1.05)
+        plt.ylim(top=1.05)
         plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
     case 2:
@@ -108,4 +109,37 @@ match x:
         plt.ylabel("Mean Absolute Error (N)")
         plt.legend(title="Noise Input")
         #plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
+        plt.show()
+    case 3:
+        noRemoval = pd.read_csv("BigVelocityTestError")
+        noPosition = pd.read_csv("NoPositionBigVelocityTestError")
+        noVelocity = pd.read_csv("NoVelocityTestError")
+        noKinematics = pd.read_csv("NoKinematicsTestError")
+        noGT = pd.read_csv("BigVelocityNoGroundTruthTestError")
+        randInput = pd.read_csv("RandomizedTrainingData.txt", sep=" ", names=["ET", "PosX", "PosY", "PosZ", "VelX", "VelY", "VelZ", "TFX", "TFY", "TFZ", "PFX", "PFY", "PFZ", "OFX", "OFY", "OFZ"], skiprows= lambda x: x < (102778 * 0.9))
+        df = (randInput - randInput.min())/(randInput.max() - randInput.min())
+        df.loc[-1] = ["","","","","","","","","","","","","","","",""]
+        df.index = df.index + 1
+        df.sort_index(inplace=True)
+        #df.insert(0,"", df.index)
+        df = df.stack()
+        df.drop([0], inplace=True)
+        df.drop(index=["PosX", "PosY", "PosZ", "OFX", "OFY", "OFZ"], level=1, inplace=True)
+        df = df.reset_index(level=[0,1])
+        df.columns = ["Input Number","Input Type", "Input Value"]
+        #aedf = pd.DataFrame(numpy.array(numpy.repeat(noPosition.dropna()["Single MAE"], 10), dtype=float)).reset_index([0])
+        #aedf.columns = ["", "AE"]
+        #df = pd.concat([df, aedf["AE"]], axis=1)
+        
+        display(df)
+
+        sns.set_style("ticks")
+        sns.set_context("paper")
+        palette = sns.color_palette("hls", 10)
+        sns.lmplot(data=df, x= "Input Number", y= "Input Value", hue="Input Type", palette=palette)
+
+        plt.title("")
+        plt.xlabel("Absolute Error")
+        plt.ylabel("Input Value")
+        plt.legend(title="Input Type")
         plt.show()
