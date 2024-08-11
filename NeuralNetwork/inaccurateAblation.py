@@ -36,6 +36,7 @@ inputTestData = list()
 outputTestData = list()
 
 trainAmount = datasetLines.__len__() * 0.9
+testAmount = 0
 
 for i in range(0,datasetLines.__len__()):
     values = datasetLines[i].split(' ')
@@ -46,8 +47,9 @@ for i in range(0,datasetLines.__len__()):
         inputTrainData.append(inputDatum)
         outputTrainData.append(outputDatum)
     else:
-        inputTestData.append(inputDatum)
-        outputTestData.append(outputDatum)
+        #inputTestData.append(inputDatum)
+        #outputTestData.append(outputDatum)
+        testAmount = testAmount + 1
 
 orderedDatasetFile = open("TrainingData.txt", "r")
 orderedDatasetLines = orderedDatasetFile.readlines()
@@ -55,14 +57,16 @@ orderedDatasetLines = orderedDatasetFile.readlines()
 inputFeedbackTestData = list()
 outputFeedbackTestData = list()
 
-for i in range(0,inputTestData.__len__()):
+for i in range(0,testAmount):
     values = orderedDatasetLines[i].split(' ')
 
     inputDatum = (float(values[0])/33333, float(values[4]) * 1000, float(values[5]) * 1000, float(values[6]) * 1000, float(values[7]), float(values[8]), float(values[9]), float(values[10]), float(values[11]), float(values[12]))
     inputFeedbackTestData.append(inputDatum)
+    inputTestData.append(inputDatum)
 
     outputDatum = (float(values[13]), float(values[14]), float(values[15]))
     outputFeedbackTestData.append(outputDatum)
+    outputTestData.append(outputDatum)
 
 print(inputTrainData[0])
 print(outputTrainData[0])
@@ -233,7 +237,7 @@ for noiseIndex in range(0,noiseRange.__len__()):
     print("Tests finished")
 
     #RESULT OUTPUT
-    with open('InaccurateAblationTestError' + str(noiseRange[noiseIndex]), 'w') as f:
+    with open('InaccurateAblationOrderedTestError' + str(noiseRange[noiseIndex]), 'w') as f:
         write = csv.writer(f)
         write.writerow(['Prev Force Single MAE', 'Prev Force Single MSE', 'True Force Single MAE', 'True Force Single MSE', 'All Force Single MAE', 'All Force Single MSE', 'All Force Feedback MAE', 'All Force Feedback MSE',])
         for i in range(0,prevForceSingleMAEResults.__len__()):

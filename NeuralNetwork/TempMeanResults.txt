@@ -253,3 +253,105 @@ All Force Feedback Estimation Test MAE Median: 0.07652098
 All Force Feedback Estimation Test MSE(Loss): 0.04159308886227773
 All Force Feedback Estimation Test MSE StdDev: 0.10404786236036634 0.10405292496355276
 All Force Feedback Estimation Test MSE Median: 0.011918925
+
+INACCURATE ORDERED ABLATION
+
+Prev Force Single Estimation Test MAE: 0.02130177409543236
+Prev Force Single Estimation Test MAE StdDev: 0.0359965969990241 0.03599834848908932
+Prev Force Single Estimation Test MAE Median: 0.008356539
+Prev Force Single Estimation Test MSE(Loss): 0.004274953793248838
+Prev Force Single Estimation Test MSE StdDev: 0.025291182450163638 0.025292412955355156
+Prev Force Single Estimation Test MSE Median: 0.00013058489
+True Force Single Estimation Test MAE: 0.01978899255369182
+True Force Single Estimation Test MAE StdDev: 0.036391577815852734 0.03639334851251952
+True Force Single Estimation Test MAE Median: 0.004281941
+True Force Single Estimation Test MSE(Loss): 0.004236724855836901
+True Force Single Estimation Test MSE StdDev: 0.0252567096019507 0.02525793838347822
+True Force Single Estimation Test MSE Median: 2.869901e-05
+All Force Single Estimation Test MAE: 0.0213812208602643
+All Force Single Estimation Test MAE StdDev: 0.036046611096779986 0.03604836498942277
+All Force Single Estimation Test MAE Median: 0.008296309
+All Force Single Estimation Test MSE(Loss): 0.0042781911557358025
+All Force Single Estimation Test MSE StdDev: 0.02525696683789689 0.025258195657861034
+All Force Single Estimation Test MSE Median: 0.00012674001
+
+Test 1, Noise: 0.03
+Prev Force Single Estimation Test MAE: 0.025143551346716107
+Prev Force Single Estimation Test MAE StdDev: 0.03568747546464501 0.03568921188961567
+Prev Force Single Estimation Test MAE Median: 0.01514668
+Prev Force Single Estimation Test MSE(Loss): 0.004520138726398062
+Prev Force Single Estimation Test MSE StdDev: 0.025260707496665518 0.025261936501187115
+Prev Force Single Estimation Test MSE Median: 0.000479936
+True Force Single Estimation Test MAE: 0.01982558159395528
+True Force Single Estimation Test MAE StdDev: 0.03638833764057518 0.03639010814751386
+True Force Single Estimation Test MAE Median: 0.0044107707
+True Force Single Estimation Test MSE(Loss): 0.004236310855609862
+True Force Single Estimation Test MSE StdDev: 0.025201573590752098 0.025202799898801972
+True Force Single Estimation Test MSE Median: 3.0393008e-05
+All Force Single Estimation Test MAE: 0.02531781165312534
+All Force Single Estimation Test MAE StdDev: 0.03553714102520449 0.03553887010033152
+All Force Single Estimation Test MAE Median: 0.015462682
+All Force Single Estimation Test MSE(Loss): 0.00452786905311772
+All Force Single Estimation Test MSE StdDev: 0.02523955867505588 0.0252407867630079
+All Force Single Estimation Test MSE Median: 0.0005050463
+
+Test 2, Noise: 0.06
+Prev Force Single Estimation Test MAE: 0.032729384277924954
+Prev Force Single Estimation Test MAE StdDev: 0.03598079006313295 0.035982540771313534
+Prev Force Single Estimation Test MAE Median: 0.025648354
+Prev Force Single Estimation Test MSE(Loss): 0.005310534247795052
+Prev Force Single Estimation Test MSE StdDev: 0.025377396127851594 0.025378630864166966
+Prev Force Single Estimation Test MSE Median: 0.0013722684
+True Force Single Estimation Test MAE: 0.01992377614057763
+True Force Single Estimation Test MAE StdDev: 0.03649895659761274 0.036500732491383685
+True Force Single Estimation Test MAE Median: 0.0046371752
+True Force Single Estimation Test MSE(Loss): 0.004262702789159888
+True Force Single Estimation Test MSE StdDev: 0.025432408527770043 0.025433645935195287
+True Force Single Estimation Test MSE Median: 3.310536e-05
+All Force Single Estimation Test MAE: 0.0330148801749734
+All Force Single Estimation Test MAE StdDev: 0.03599579128973504 0.03599754271027031
+All Force Single Estimation Test MAE Median: 0.025682138
+All Force Single Estimation Test MSE(Loss): 0.00531695485346416
+All Force Single Estimation Test MSE StdDev: 0.02497799888596355 0.0249792143065293
+All Force Single Estimation Test MSE Median: 0.0013788451
+
+Test 3, Noise: 0.12
+Prev Force Single Estimation Test MAE: 0.049984834399367024
+Prev Force Single Estimation Test MAE StdDev: 0.03985376517916805 0.03985570434098411
+Prev Force Single Estimation Test MAE Median: 0.042558987
+Prev Force Single Estimation Test MSE(Loss): 0.007983229857065682
+Prev Force Single Estimation Test MSE StdDev: 0.02537100655124727 0.02537224098010877
+Prev Force Single Estimation Test MSE Median: 0.003666261
+True Force Single Estimation Test MAE: 0.020582433750907566
+True Force Single Estimation Test MAE StdDev: 0.0364118648399197 0.03641363646584261
+True Force Single Estimation Test MAE Median: 0.0062567727
+True Force Single Estimation Test MSE(Loss): 0.004272375916782439
+True Force Single Estimation Test MSE StdDev: 0.025185094592074766 0.02518632016595176
+True Force Single Estimation Test MSE Median: 5.810117e-05
+All Force Single Estimation Test MAE: 0.05121853288024384
+All Force Single Estimation Test MAE StdDev: 0.04007957241877439 0.04008152257056775
+All Force Single Estimation Test MAE Median: 0.044539183
+All Force Single Estimation Test MSE(Loss): 0.008168787536269881
+All Force Single Estimation Test MSE StdDev: 0.02587309157952633 0.025874350483602454
+All Force Single Estimation Test MSE Median: 0.0038792447
+
+
+Test 4, Noise: 0.3
+Prev Force Single Estimation Test MAE: 0.11210008404156083
+Prev Force Single Estimation Test MAE StdDev: 0.06728426093481091 0.06728753471945204
+Prev Force Single Estimation Test MAE Median: 0.10182724
+Prev Force Single Estimation Test MSE(Loss): 0.02835755104627924
+Prev Force Single Estimation Test MSE StdDev: 0.03661436930535479 0.036616150714544084
+Prev Force Single Estimation Test MSE Median: 0.018627185
+True Force Single Estimation Test MAE: 0.0271334460312353
+True Force Single Estimation Test MAE StdDev: 0.03768130240894671 0.03768313584662422
+True Force Single Estimation Test MAE Median: 0.0158772
+True Force Single Estimation Test MSE(Loss): 0.004843363245445414
+True Force Single Estimation Test MSE StdDev: 0.026524782118082582 0.026526072637972353
+True Force Single Estimation Test MSE Median: 0.0004335382
+All Force Single Estimation Test MAE: 0.1159779181890901
+All Force Single Estimation Test MAE StdDev: 0.06741736725491487 0.06742064755468677
+All Force Single Estimation Test MAE Median: 0.10635545
+All Force Single Estimation Test MSE(Loss): 0.029033641594198915
+All Force Single Estimation Test MSE StdDev: 0.03846127121362756 0.0384631426294966
+All Force Single Estimation Test MSE Median: 0.019095158

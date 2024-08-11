@@ -8,7 +8,7 @@ import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 3
+x = 1
 
 match x:
     case 0:
@@ -29,32 +29,56 @@ match x:
         plt.show()
     case 1:
         window = 500
-        iA0 = pd.read_csv("NoPositionBigVelocityTestError")
-        iA0.insert(1, "Smooth All Force Feedback MAE", iA0["Feedback MAE"].rolling(window).mean(), True)
-        iA0.dropna(inplace=True)
-        iA20 = pd.read_csv("InaccurateAblationTestError0.012")
-        iA20.insert(1,"Smooth All Force Feedback MAE", iA20["All Force Feedback MAE"].rolling(window).mean(), True)
-        iA20.dropna(inplace=True)
-        iA50 = pd.read_csv("InaccurateAblationTestError0.03")
-        iA50.insert(1,"Smooth All Force Feedback MAE", iA50["All Force Feedback MAE"].rolling(window).mean(), True)
-        iA50.dropna(inplace=True)
-        iA100 = pd.read_csv("InaccurateAblationTestError0.06")
-        iA100.insert(1,"Smooth All Force Feedback MAE", iA100["All Force Feedback MAE"].rolling(window).mean(), True)
-        iA100.dropna(inplace=True)        
-        iA200 = pd.read_csv("InaccurateAblationTestError0.12")
-        iA200.insert(1,"Smooth All Force Feedback MAE", iA200["All Force Feedback MAE"].rolling(window).mean(), True)
-        iA200.dropna(inplace=True)
-        iA500 = pd.read_csv("InaccurateAblationTestError0.3")
-        iA500.insert(1,"Smooth All Force Feedback MAE", iA500["All Force Feedback MAE"].rolling(window).mean(), True)
-        iA500.dropna(inplace=True)
-        concat = pd.concat([iA0.assign(Noise="0%"), iA20.assign(Noise="20%"), iA50.assign(Noise="50%"), iA100.assign(Noise="100%"), iA200.assign(Noise="200%"), iA500.assign(Noise="500%")])
+        iA0feedback = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Feedback MAE"])
+        iA0feedback.insert(1, "Smooth True Force MAE", iA0feedback["Feedback MAE"].rolling(window).mean(), True)
+        iA0feedback.dropna(inplace=True)
+        iA20feedback = pd.read_csv("OrderedInaccurateAblationTestError0.012", usecols=["All Force Feedback MAE"])
+        iA20feedback.insert(1,"Smooth True Force MAE", iA20feedback["All Force Feedback MAE"].rolling(window).mean(), True)
+        iA20feedback.dropna(inplace=True)
+        iA50feedback = pd.read_csv("OrderedInaccurateAblationTestError0.03", usecols=["All Force Feedback MAE"])
+        iA50feedback.insert(1,"Smooth True Force MAE", iA50feedback["All Force Feedback MAE"].rolling(window).mean(), True)
+        iA50feedback.dropna(inplace=True)
+        iA100feedback = pd.read_csv("OrderedInaccurateAblationTestError0.06", usecols=["All Force Feedback MAE"])
+        iA100feedback.insert(1,"Smooth True Force MAE", iA100feedback["All Force Feedback MAE"].rolling(window).mean(), True)
+        iA100feedback.dropna(inplace=True)        
+        iA200feedback = pd.read_csv("OrderedInaccurateAblationTestError0.12", usecols=["All Force Feedback MAE"])
+        iA200feedback.insert(1,"Smooth True Force MAE", iA200feedback["All Force Feedback MAE"].rolling(window).mean(), True)
+        iA200feedback.dropna(inplace=True)
+        iA500feedback = pd.read_csv("OrderedInaccurateAblationTestError0.3", usecols=["All Force Feedback MAE"])
+        iA500feedback.insert(1,"Smooth True Force MAE", iA500feedback["All Force Feedback MAE"].rolling(window).mean(), True)
+        iA500feedback.dropna(inplace=True)
+        feedback = pd.concat([iA0feedback.assign(Noise="0%"), iA20feedback.assign(Noise="20%"), iA50feedback.assign(Noise="50%"), iA100feedback.assign(Noise="100%"), iA200feedback.assign(Noise="200%"), iA500feedback.assign(Noise="500%")])
+        display(feedback)
+
+        iA0single = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Single MAE"])
+        iA0single.insert(1, "Smooth True Force MAE", iA0single["Single MAE"].rolling(window).mean(), True)
+        iA0single.dropna(inplace=True)
+        iA20single = pd.read_csv("OrderedInaccurateAblationTestError0.012", usecols=["True Force Single MAE"])
+        iA20single.insert(1,"Smooth True Force MAE", iA20single["True Force Single MAE"].rolling(window).mean(), True)
+        iA20single.dropna(inplace=True)
+        iA50single = pd.read_csv("OrderedInaccurateAblationTestError0.03", usecols=["True Force Single MAE"])
+        iA50single.insert(1,"Smooth True Force MAE", iA50single["True Force Single MAE"].rolling(window).mean(), True)
+        iA50single.dropna(inplace=True)
+        iA100single = pd.read_csv("OrderedInaccurateAblationTestError0.06", usecols=["True Force Single MAE"])
+        iA100single.insert(1,"Smooth True Force MAE", iA100single["True Force Single MAE"].rolling(window).mean(), True)
+        iA100single.dropna(inplace=True)        
+        iA200single = pd.read_csv("OrderedInaccurateAblationTestError0.12", usecols=["True Force Single MAE"])
+        iA200single.insert(1,"Smooth True Force MAE", iA200single["True Force Single MAE"].rolling(window).mean(), True)
+        iA200single.dropna(inplace=True)
+        iA500single = pd.read_csv("OrderedInaccurateAblationTestError0.3", usecols=["True Force Single MAE"])
+        iA500single.insert(1,"Smooth True Force MAE", iA500single["True Force Single MAE"].rolling(window).mean(), True)
+        iA500single.dropna(inplace=True)
+        single = pd.concat([iA0single.assign(Noise="0%"), iA20single.assign(Noise="20%"), iA50single.assign(Noise="50%"), iA100single.assign(Noise="100%"), iA200single.assign(Noise="200%"), iA500single.assign(Noise="500%")])
+        display(single)
+
+        concat = pd.concat([feedback.assign(Test="Feedback Estimation"), single.assign(Test="Single Estimation")])
 
         sns.set_style("ticks")
         sns.set_context("paper")
         palette = sns.color_palette("rocket")
 
         #sns.relplot(data=concat, x=concat.index, y="True Force Single MAE", hue="Noise", palette=palette, kind="scatter", s=10)
-        sns.relplot(data=concat, x=concat.index, y="Smooth All Force Feedback MAE", hue="Noise", palette=palette, kind="line", linewidth=1.5)
+        sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", style="Test", linewidth=1.2)
         
         plt.title("")
         plt.xlabel("Estimation Number")
