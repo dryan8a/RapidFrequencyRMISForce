@@ -8,7 +8,7 @@ import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 1
+x = 3
 
 match x:
     case 0:
@@ -170,15 +170,16 @@ match x:
         palette = sns.color_palette("hls", 10)
 
         g = sns.FacetGrid(data=df, hue="Input Type", palette=palette)
-        g.map(plt.scatter, "Single MAE", "Input Value", s=15, alpha=.7)
-        #g.map(sns.regplot, "Single MAE", "Input Value", ci=None, robust=1)
+        #g.map(plt.scatter, "Single MAE", "Input Value", s=15, alpha=.7)
+        g.map(sns.regplot, "Input Value", "Single MAE", ci=None, robust=1, line_kws={"linewidth":4}, scatter_kws={"s":1, "alpha":0.5})
         #g.map(sns.residplot, "Single MAE", "Input Value", lowess=True)
 
         plt.title("")
-        plt.xlabel("Absolute Error")
-        plt.xlim(0.00055, 1.05)
-        plt.xscale("log")
-        plt.ylabel("Input Value")
-        plt.ylim(-0.003,1.003)
-        plt.legend(title="Input Type")
+        plt.ylabel("Absolute Error")
+        plt.ylim(0.00055, 1.05)
+        plt.yscale("log")
+        plt.xlabel("Input Value")
+        plt.xlim(-0.003,1.003)
+        plt.legend(title="Input Type", markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
+        plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
