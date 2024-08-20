@@ -80,7 +80,7 @@ match x:
         palette = sns.color_palette("rocket")
 
         #sns.relplot(data=concat, x=concat.index, y="True Force Single MAE", hue="Noise", palette=palette, kind="scatter", s=10)
-        g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", col="Test", linewidth=1.2)
+        g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", col="Test", linewidth=1.2, aspect=2, height=3)
         
         plt.title("")
         g.set_xlabels("Estimation Number")
@@ -88,7 +88,8 @@ match x:
         plt.xlim(0,10277)
         g.set_ylabels("Absolute Error (N)")
         plt.yscale("log")
-        plt.ylim(top=1.05)
+        plt.ylim(top=0.4)
+        #plt.legend(bbox_to_anchor=(1,1))
         #plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
     case 2:
