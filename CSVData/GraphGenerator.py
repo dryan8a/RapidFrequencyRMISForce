@@ -1,14 +1,16 @@
 import numpy
 import math
 import statistics
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import time
 import csv
 import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 3
+x = 1
 
 match x:
     case 0:
@@ -71,22 +73,23 @@ match x:
         single = pd.concat([iA0single.assign(Noise="0%"), iA20single.assign(Noise="20%"), iA50single.assign(Noise="50%"), iA100single.assign(Noise="100%"), iA200single.assign(Noise="200%"), iA500single.assign(Noise="500%")])
         display(single)
 
-        concat = pd.concat([feedback.assign(Test="Feedback Estimation"), single.assign(Test="Single Estimation")])
+        concat = pd.concat([single.assign(Test="Single Estimation"), feedback.assign(Test="Feedback Estimation")])
 
         sns.set_style("ticks")
         sns.set_context("paper")
         palette = sns.color_palette("rocket")
 
         #sns.relplot(data=concat, x=concat.index, y="True Force Single MAE", hue="Noise", palette=palette, kind="scatter", s=10)
-        sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", style="Test", linewidth=1.2)
+        g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", col="Test", linewidth=1.2)
         
         plt.title("")
-        plt.xlabel("Estimation Number")
+        g.set_xlabels("Estimation Number")
+        g.set_titles("{col_name} Test")
         plt.xlim(0,10277)
-        plt.ylabel("Absolute Error (N)")
+        g.set_ylabels("Absolute Error (N)")
         plt.yscale("log")
         plt.ylim(top=1.05)
-        plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
+        #plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
     case 2:
         '''
@@ -167,19 +170,31 @@ match x:
 
         sns.set_style("ticks")
         sns.set_context("paper")
-        palette = sns.color_palette("hls", 10)
+        etPal = sns.color_palette("Greys",1,as_cmap=False)
+        velPal = sns.color_palette("Greens_d",3,as_cmap=False)
+        tfxPal = sns.color_palette("Blues_d", 3, as_cmap=False)
+        pfxPal = sns.color_palette("Reds_d", 3, as_cmap=False)
+        
+        palette = numpy.vstack((numpy.vstack((numpy.vstack((etPal,velPal)),tfxPal)),pfxPal))
+        #palette = mcolors.LinearSegmentedColormap.from_list("my_palette", colors)
 
-        g = sns.FacetGrid(data=df, hue="Input Type", palette=palette)
+        g = sns.FacetGrid(data=df, hue="Input Type", palette=palette, height=4, aspect=3)
         #g.map(plt.scatter, "Single MAE", "Input Value", s=15, alpha=.7)
-        g.map(sns.regplot, "Input Value", "Single MAE", ci=None, robust=1, line_kws={"linewidth":4}, scatter_kws={"s":1, "alpha":0.5})
+        ax = g.map(sns.regplot, "Input Value", "Single MAE", ci=None, robust=1, line_kws={"linewidth":3}, scatter_kws={"s":0.3, "alpha":0.5})
         #g.map(sns.residplot, "Single MAE", "Input Value", lowess=True)
 
+        plt.axhline(y=0.06, color= "black", linestyle = 'dashed', label=r'$\tau_F$')
+
+        
+        handles, labels = ax.ax.get_legend_handles_labels()
+
+
         plt.title("")
-        plt.ylabel("Absolute Error")
+        plt.ylabel("Absolute Error (N)")
         plt.ylim(0.00055, 1.05)
         plt.yscale("log")
-        plt.xlabel("Input Value")
+        plt.xlabel("Normalized Input Value")
         plt.xlim(-0.003,1.003)
-        plt.legend(title="Input Type", markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
-        plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
+        plt.legend(title="Input Type", handles= handles, labels= labels, markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
+        
         plt.show()
