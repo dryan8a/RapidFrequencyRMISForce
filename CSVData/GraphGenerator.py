@@ -10,7 +10,7 @@ import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 1
+x = 4
 
 match x:
     case 0:
@@ -73,20 +73,20 @@ match x:
         single = pd.concat([iA0single.assign(Noise="0%"), iA20single.assign(Noise="20%"), iA50single.assign(Noise="50%"), iA100single.assign(Noise="100%"), iA200single.assign(Noise="200%"), iA500single.assign(Noise="500%")])
         display(single)
 
-        concat = pd.concat([single.assign(Test="Single Estimation"), feedback.assign(Test="Feedback Estimation")])
+        concat = pd.concat([feedback.assign(Test="Feedback Estimation"), single.assign(Test="Single Estimation")])
 
         sns.set_style("ticks")
         sns.set_context("paper")
         palette = sns.color_palette("rocket")
 
         #sns.relplot(data=concat, x=concat.index, y="True Force Single MAE", hue="Noise", palette=palette, kind="scatter", s=10)
-        g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", col="Test", linewidth=1.2, aspect=2, height=3)
+        g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", style="Test", linewidth=1.2, aspect=3, height=3)
         
         plt.title("")
-        g.set_xlabels("Estimation Number")
-        g.set_titles("{col_name} Test")
+        plt.xlabel("Estimation Number")
+        #g.set_titles("{col_name} Test")
         plt.xlim(0,10277)
-        g.set_ylabels("Absolute Error (N)")
+        plt.ylabel("Absolute Error (N)")
         plt.yscale("log")
         plt.ylim(top=0.4)
         #plt.legend(bbox_to_anchor=(1,1))
@@ -131,9 +131,11 @@ match x:
 
         sns.set_style("ticks")
         sns.set_context("paper")
-        palette = sns.color_palette("hls", 3)
+        palette = sns.color_palette("crest", 3)
 
-        sns.barplot(df, x="Noise", y="MAE", hue="NoiseInput")
+        print(palette.as_hex())
+
+        sns.barplot(df, x="Noise", y="MAE", hue="NoiseInput", palette = palette)
 
         plt.title("")
         plt.xlabel("Noise (% of 0.06N)")
@@ -197,5 +199,37 @@ match x:
         plt.xlabel("Normalized Input Value")
         plt.xlim(-0.003,1.003)
         plt.legend(title="Input Type", handles= handles, labels= labels, markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
+        
+        plt.show()
+    case 4:
+        input = pd.read_csv("TrainingData.txt", sep=" ", names=["ET", "PosX", "PosY", "PosZ", "VelX", "VelY", "VelZ", "TFX", "TFY", "TFZ", "PFX", "PFY", "PFZ", "OFX", "OFY", "OFZ"], skiprows= lambda x: x > (102778 * 0.1 - 1))
+        inputdf = pd.concat([pd.DataFrame(input["TFX"].rename("True Force")).assign(Axis="X"), pd.DataFrame(input["TFY"].rename("True Force")).assign(Axis="Y"), pd.DataFrame(input["TFZ"].rename("True Force")).assign(Axis="Z")])
+        display(inputdf)
+
+        window = 1
+        feedback = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Feedback MAE"])
+        feedback.insert(1, "Smooth True Force MAE", feedback["Feedback MAE"].rolling(window).mean(), True)
+        feedback.dropna(inplace=True)
+
+        feedbackdf = pd.concat([inputdf, feedback], axis=1)
+        display(feedbackdf)
+        single = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Single MAE"])
+        single.insert(1, "Smooth True Force MAE", single["Single MAE"].rolling(window).mean(), True)
+        single.dropna(inplace=True)
+        singledf = pd.concat([inputdf, single], axis=1)
+        display(singledf)
+        df = pd.concat([singledf.assign(Test="Single Estimation"), feedbackdf.assign(Test="Feedback Estimation")])
+
+        display(df)
+
+        
+
+        plt.title("")
+        plt.ylabel("Absolute Error (N)")
+        plt.ylim(0.00055, 1.05)
+        plt.yscale("log")
+        plt.xlabel("Ground Truth Force (N)")
+        plt.xlim(-0.003,1.003)
+        plt.legend(title="Input Type", markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
         
         plt.show()
