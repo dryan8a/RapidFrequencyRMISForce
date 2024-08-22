@@ -10,7 +10,7 @@ import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 4
+x = 3
 
 match x:
     case 0:
@@ -208,13 +208,13 @@ match x:
 
         window = 1
         feedback = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Feedback MAE"])
-        feedback.insert(1, "Smooth True Force MAE", feedback["Feedback MAE"].rolling(window).mean(), True)
+        feedback.insert(1, "True Force MAE", feedback["Feedback MAE"].rolling(window).mean(), True)
         feedback.dropna(inplace=True)
 
         feedbackdf = pd.concat([inputdf, feedback], axis=1)
         display(feedbackdf)
         single = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Single MAE"])
-        single.insert(1, "Smooth True Force MAE", single["Single MAE"].rolling(window).mean(), True)
+        single.insert(1, "True Force MAE", single["Single MAE"].rolling(window).mean(), True)
         single.dropna(inplace=True)
         singledf = pd.concat([inputdf, single], axis=1)
         display(singledf)
@@ -222,7 +222,8 @@ match x:
 
         display(df)
 
-        
+        g = sns.FacetGrid(df, col="Axis",)
+        g.map(sns.jointplot, data=df, x="True Force",y="True Force MAE",  hue="Test")
 
         plt.title("")
         plt.ylabel("Absolute Error (N)")
@@ -230,6 +231,6 @@ match x:
         plt.yscale("log")
         plt.xlabel("Ground Truth Force (N)")
         plt.xlim(-0.003,1.003)
-        plt.legend(title="Input Type", markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
+        plt.legend()
         
         plt.show()
