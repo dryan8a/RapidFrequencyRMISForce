@@ -10,7 +10,7 @@ import seaborn as sns
 import pandas as pd
 from IPython.display import display
 
-x = 3
+x = 4
 
 match x:
     case 0:
@@ -203,34 +203,34 @@ match x:
         plt.show()
     case 4:
         input = pd.read_csv("TrainingData.txt", sep=" ", names=["ET", "PosX", "PosY", "PosZ", "VelX", "VelY", "VelZ", "TFX", "TFY", "TFZ", "PFX", "PFY", "PFZ", "OFX", "OFY", "OFZ"], skiprows= lambda x: x > (102778 * 0.1 - 1))
-        inputdf = pd.concat([pd.DataFrame(input["TFX"].rename("True Force")).assign(Axis="X"), pd.DataFrame(input["TFY"].rename("True Force")).assign(Axis="Y"), pd.DataFrame(input["TFZ"].rename("True Force")).assign(Axis="Z")])
-        display(inputdf)
+        #inputdf = pd.concat([pd.DataFrame(input["TFX"].rename("True Force")).assign(Axis="X"), pd.DataFrame(input["TFY"].rename("True Force")).assign(Axis="Y"), pd.DataFrame(input["TFZ"].rename("True Force")).assign(Axis="Z")])
+        #display(inputdf)
 
         window = 1
         feedback = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Feedback MAE"])
         feedback.insert(1, "True Force MAE", feedback["Feedback MAE"].rolling(window).mean(), True)
         feedback.dropna(inplace=True)
-
-        feedbackdf = pd.concat([inputdf, feedback], axis=1)
+        feedbackdf = pd.concat([input[["PFX", "PFY", "PFZ"]], feedback], axis=1)
         display(feedbackdf)
+
         single = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Single MAE"])
         single.insert(1, "True Force MAE", single["Single MAE"].rolling(window).mean(), True)
         single.dropna(inplace=True)
-        singledf = pd.concat([inputdf, single], axis=1)
+        singledf = pd.concat([input[["PFX", "PFY", "PFZ"]], single], axis=1)
         display(singledf)
+
         df = pd.concat([singledf.assign(Test="Single Estimation"), feedbackdf.assign(Test="Feedback Estimation")])
 
         display(df)
 
-        g = sns.FacetGrid(df, col="Axis",)
-        g.map(sns.jointplot, data=df, x="True Force",y="True Force MAE",  hue="Test")
+        sns.jointplot(data=df, x="PFX" , y="True Force MAE",  hue="Test", s=3)
 
         plt.title("")
         plt.ylabel("Absolute Error (N)")
         plt.ylim(0.00055, 1.05)
         plt.yscale("log")
-        plt.xlabel("Ground Truth Force (N)")
-        plt.xlim(-0.003,1.003)
+        plt.xlabel("X Axis Ground Truth Force (N)")
+        #plt.xlim(-0.003,1.003)
         plt.legend()
         
         plt.show()
