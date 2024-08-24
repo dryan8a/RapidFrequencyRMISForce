@@ -224,27 +224,49 @@ match x:
         singleZdf = singledf[singledf["PFZ"] != 0]
 
         xdf = pd.concat([singleXdf.assign(Test="Single Estimation"), feedbackXdf.assign(Test="Feedback Estimation")])
-        ydf = pd.concat([singleYdf.assign(Test="Single Estimation"), feedbackYdf.assign(Test="Feedback Estimation")])
-        zdf = pd.concat([singleZdf.assign(Test="Single Estimation"), feedbackZdf.assign(Test="Feedback Estimation")])
+        #ydf = pd.concat([singleYdf.assign(Test="Single Estimation"), feedbackYdf.assign(Test="Feedback Estimation")])
+        #zdf = pd.concat([singleZdf.assign(Test="Single Estimation"), feedbackZdf.assign(Test="Feedback Estimation")])
 
-        display(xdf)
+        #display(xdf)
 
-        sns.jointplot(data=xdf, x="PFX" , y="True Force MAE",  hue="Test", kind="kde")
-        plt.ylabel("Absolute Error (N)")
+
+        sns.jointplot(data=singleXdf, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.00055, 1.05)
+        plt.yscale("log")
+        plt.xlabel("X Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackXdf, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
         plt.ylim(0.00055, 1.05)
         plt.yscale("log")
         plt.xlabel("X Axis Ground Truth Force (N)")
         plt.show()
         
-        sns.jointplot(data=ydf, x="PFY" , y="True Force MAE",  hue="Test", kind="kde")
-        plt.ylabel("Absolute Error (N)")
+        sns.jointplot(data=singleYdf, x="PFY" , y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.00055, 1.05)
+        plt.yscale("log")
+        plt.xlabel("Y Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackYdf, x="PFY" , y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
         plt.ylim(0.00055, 1.05)
         plt.yscale("log")
         plt.xlabel("Y Axis Ground Truth Force (N)")
         plt.show()
         
-        sns.jointplot(data=zdf, x="PFZ" , y="True Force MAE",  hue="Test", kind="kde")
-        plt.ylabel("Absolute Error (N)")
+        sns.jointplot(data=singleZdf, x="PFZ" , y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.00055, 1.05)
+        plt.yscale("log")
+        plt.xlabel("Z Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackZdf, x="PFZ" , y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
         plt.ylim(0.00055, 1.05)
         plt.yscale("log")
         plt.xlabel("Z Axis Ground Truth Force (N)")
