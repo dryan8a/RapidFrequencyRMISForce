@@ -4,11 +4,66 @@ import statistics
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.gridspec as gridspec
 import time
 import csv
 import seaborn as sns
 import pandas as pd
 from IPython.display import display
+
+
+class SeabornFig2Grid():
+
+    def __init__(self, seaborngrid, fig,  subplot_spec):
+        self.fig = fig
+        self.sg = seaborngrid
+        self.subplot = subplot_spec
+        if isinstance(self.sg, sns.axisgrid.FacetGrid) or \
+            isinstance(self.sg, sns.axisgrid.PairGrid):
+            self._movegrid()
+        elif isinstance(self.sg, sns.axisgrid.JointGrid):
+            self._movejointgrid()
+        self._finalize()
+
+    def _movegrid(self):
+        """ Move PairGrid or Facetgrid """
+        self._resize()
+        n = self.sg.axes.shape[0]
+        m = self.sg.axes.shape[1]
+        self.subgrid = gridspec.GridSpecFromSubplotSpec(n,m, subplot_spec=self.subplot)
+        for i in range(n):
+            for j in range(m):
+                self._moveaxes(self.sg.axes[i,j], self.subgrid[i,j])
+
+    def _movejointgrid(self):
+        """ Move Jointgrid """
+        h= self.sg.ax_joint.get_position().height
+        h2= self.sg.ax_marg_x.get_position().height
+        r = int(numpy.round(h/h2))
+        self._resize()
+        self.subgrid = gridspec.GridSpecFromSubplotSpec(r+1,r+1, subplot_spec=self.subplot)
+
+        self._moveaxes(self.sg.ax_joint, self.subgrid[1:, :-1])
+        self._moveaxes(self.sg.ax_marg_x, self.subgrid[0, :-1])
+        self._moveaxes(self.sg.ax_marg_y, self.subgrid[1:, -1])
+
+    def _moveaxes(self, ax, gs):
+        #https://stackoverflow.com/a/46906599/4124317
+        ax.remove()
+        ax.figure=self.fig
+        self.fig.axes.append(ax)
+        self.fig.add_axes(ax)
+        ax._subplotspec = gs
+        ax.set_position(gs.get_position(self.fig))
+        ax.set_subplotspec(gs)
+
+    def _finalize(self):
+        plt.close(self.sg.fig)
+        self.fig.canvas.mpl_connect("resize_event", self._resize)
+        self.fig.canvas.draw()
+
+    def _resize(self, evt=None):
+        self.sg.fig.set_size_inches(self.fig.get_size_inches())
 
 x = 4
 
@@ -205,6 +260,9 @@ match x:
         input = pd.read_csv("TrainingData.txt", sep=" ", names=["ET", "PosX", "PosY", "PosZ", "VelX", "VelY", "VelZ", "TFX", "TFY", "TFZ", "PFX", "PFY", "PFZ", "OFX", "OFY", "OFZ"], skiprows= lambda x: x > (102778 * 0.1 - 1))
         input.insert(1,"TFMag", numpy.sqrt(numpy.power(input["PFX"],2) + numpy.power(input["PFY"],2) + numpy.power(input["PFZ"],2)))
         inputClean = input[input["TFMag"] != 0]
+        inputX = input[input["PFX"] != 0]
+        inputY = input[input["PFY"] != 0]
+        inputZ = input[input['PFZ'] != 0]
         #inputdf = pd.concat([pd.DataFrame(input["TFX"].rename("True Force")).assign(Axis="X"), pd.DataFrame(input["TFY"].rename("True Force")).assign(Axis="Y"), pd.DataFrame(input["TFZ"].rename("True Force")).assign(Axis="Z")])
         display(inputClean)
 
@@ -212,13 +270,21 @@ match x:
         feedback = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Feedback MAE"])
         feedback.insert(1, "True Force MAE", feedback["Feedback MAE"].rolling(window).mean(), True)
         feedback.dropna(inplace=True)
+        feedbackX = pd.concat([inputX["PFX"], feedback], axis=1)
+        feedbackY = pd.concat([inputY["PFY"], feedback], axis=1)
+        feedbackZ = pd.concat([inputZ["PFZ"], feedback], axis=1)
         feedbackdf = pd.concat([inputClean["TFMag"], feedback], axis=1)
 
         single = pd.read_csv("OrderedNoPositionBigVelocityTestError", usecols=["Single MAE"])
         single.insert(1, "True Force MAE", single["Single MAE"].rolling(window).mean(), True)
         single.dropna(inplace=True)
+        singleX = pd.concat([inputX["PFX"], single], axis=1)
+        singleY = pd.concat([inputY["PFY"], single], axis=1)
+        singleZ = pd.concat([inputZ["PFZ"], single], axis=1)
         singledf = pd.concat([inputClean["TFMag"], single], axis=1)
  
+        
+        fig, axs = plt.subplots(2,1, squeeze=False)
 
         #xdf = pd.concat([singleXdf.assign(Test="Single Estimation"), feedbackXdf.assign(Test="Feedback Estimation")])
         #ydf = pd.concat([singleYdf.assign(Test="Single Estimation"), feedbackYdf.assign(Test="Feedback Estimation")])
@@ -226,17 +292,58 @@ match x:
 
         #display(xdf)
 
+        sns.jointplot(data=singleX, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("X Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackX, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("X Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=singleY, x="PFY", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("Y Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackY, x="PFY", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("Y Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=singleZ, x="PFZ", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
+        plt.ylabel("Single Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("Z Axis Ground Truth Force (N)")
+        plt.show()
+
+        sns.jointplot(data=feedbackZ, x="PFZ", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
+        plt.ylabel("Feedback Absolute Error (N)")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
+        plt.xlabel("Z Axis Ground Truth Force (N)")
+        plt.show()
 
         sns.jointplot(data=singledf, x="TFMag", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
         plt.ylabel("Single Absolute Error (N)")
-        plt.ylim(0.0005, 1.05)
-        plt.yscale("log")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
         plt.xlabel("Ground Truth Force Magnitude (N)")
         plt.show()
 
         sns.jointplot(data=feedbackdf, x="TFMag", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
         plt.ylabel("Feedback Absolute Error (N)")
-        plt.ylim(0.0005, 1.05)
-        plt.yscale("log")
+        plt.ylim(0.000, 0.8)
+        #plt.yscale("log")
         plt.xlabel("Ground Truth Force Magngitude (N)")
         plt.show()
