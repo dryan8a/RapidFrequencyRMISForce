@@ -130,6 +130,8 @@ match x:
 
         concat = pd.concat([feedback.assign(Test="Feedback Estimation"), single.assign(Test="Single Estimation")])
 
+        plt.rcParams.update({'text.latex.preamble': r'\usepackage{amsfonts}'})
+
         sns.set_style("ticks")
         sns.set_context("paper")
         palette = sns.color_palette("rocket")
@@ -137,14 +139,18 @@ match x:
         #sns.relplot(data=concat, x=concat.index, y="True Force Single MAE", hue="Noise", palette=palette, kind="scatter", s=10)
         g = sns.relplot(data=concat, x=concat.index, y="Smooth True Force MAE", hue="Noise", palette=palette, kind="line", style="Test", linewidth=1.2, aspect=3, height=3)
         
+        g.legend.set_frame_on(True)
+        g.legend.texts[0].set_text(r"Noise (% of $\tau_F$)")
+        g.legend.texts[8].set_text(r"Feedback Estimation $\mathbb{E}_F$")
+        g.legend.texts[9].set_text(r"Single Estimation $\mathbb{E}_S$")
+
         plt.title("")
-        plt.xlabel("Estimation Number")
+        plt.xlabel("Timestep")
         #g.set_titles("{col_name} Test")
         plt.xlim(0,10277)
         plt.ylabel("Absolute Error (N)")
         plt.yscale("log")
         plt.ylim(top=0.4)
-        #plt.legend(bbox_to_anchor=(1,1))
         #plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
     case 2:
@@ -177,11 +183,11 @@ match x:
         df = pd.concat([iA20.assign(Noise="20%"), iA50.assign(Noise="50%"), iA100.assign(Noise="100%"), iA200.assign(Noise="200%"), iA500.assign(Noise="500%")])
         '''
 
-        data = [["20%", "Previous Force", 0.021053519992951575], ["20%", "True Force", 0.02080679973178915],["20%", "All Force", 0.021055618557386697],
-                ["50%", "Previous Force", 0.022195641001843184], ["50%", "True Force", 0.020835491940108183],["50%", "All Force", 0.0223268969843185],
-                ["100%", "Previous Force", 0.025841570883649547], ["100%", "True Force", 0.020990253061681112],["100%", "All Force", 0.02605403507335384],
-                ["200%", "Previous Force", 0.03693631043746085], ["200%", "True Force", 0.02161498109018607],["200%", "All Force", 0.03794760517291978],
-                ["500%", "Previous Force", 0.08221798256355708], ["500%", "True Force", 0.025634497854167146],["500%", "All Force", 0.08553248307924541]]
+        data = [["20%", "Sparse Force ($f_S$)", 0.02080679973178915],     ["20%", "Previous Force ($f_P$)", 0.021053519992951575],    ["20%", "All Force ($f_S$ and $f_P$)", 0.021055618557386697],
+                ["50%", "Sparse Force ($f_S$)", 0.020835491940108183],    ["50%", "Previous Force ($f_P$)", 0.022195641001843184],    ["50%", "All Force ($f_S$ and $f_P$)", 0.0223268969843185],
+                ["100%", "Sparse Force ($f_S$)", 0.020990253061681112],   ["100%", "Previous Force ($f_P$)", 0.025841570883649547],   ["100%", "All Force ($f_S$ and $f_P$)", 0.02605403507335384],
+                ["200%", "Sparse Force ($f_S$)", 0.02161498109018607],    ["200%", "Previous Force ($f_P$)", 0.03693631043746085],    ["200%", "All Force ($f_S$ and $f_P$)", 0.03794760517291978],
+                ["500%", "Sparse Force ($f_S$)", 0.025634497854167146],   ["500%", "Previous Force ($f_P$)", 0.08221798256355708],    ["500%", "All Force ($f_S$ and $f_P$)", 0.08553248307924541]]
         df = pd.DataFrame(data, columns=["Noise", "NoiseInput", "MAE"])
 
         sns.set_style("ticks")
@@ -193,9 +199,9 @@ match x:
         sns.barplot(df, x="Noise", y="MAE", hue="NoiseInput", palette = palette)
 
         plt.title("")
-        plt.xlabel("Noise (% of 0.06N)")
+        plt.xlabel(r"Noise (% of $\tau_F$)")
         plt.ylabel("Mean Absolute Error (N)")
-        plt.legend(title="Noise Input")
+        plt.legend(title="Noisy Input")
         #plt.axhline(y=0.06, color= "black", linestyle = 'dashed')
         plt.show()
     case 3:
@@ -246,6 +252,21 @@ match x:
         
         handles, labels = ax.ax.get_legend_handles_labels()
 
+        EThandle = handles.pop(0)
+        ETlabel = "$\Delta t$"
+        labels.pop(0)
+        labels.insert(9,ETlabel)
+        handles.insert(9,EThandle)
+
+        labels[0] = "$v_x$"
+        labels[1] = "$v_y$"
+        labels[2] = "$v_z$"
+        labels[3] = "$f_{Sx}$"
+        labels[4] = "$f_{Sy}$"
+        labels[5] = "$f_{Sz}$"
+        labels[6] = "$f_{Px}$"
+        labels[7] = "$f_{Py}$"
+        labels[8] = "$f_{Pz}$"
 
         plt.title("")
         plt.ylabel("Absolute Error (N)")
@@ -253,7 +274,7 @@ match x:
         plt.yscale("log")
         plt.xlabel("Normalized Input Value")
         plt.xlim(-0.003,1.003)
-        plt.legend(title="Input Type", handles= handles, labels= labels, markerscale=4, loc="upper left", bbox_to_anchor=(1,1))
+        plt.legend(title="Input Feature", handles= handles, labels= labels, markerscale=5, loc="upper left", bbox_to_anchor=(1,1))
         
         plt.show()
     case 4:
@@ -284,7 +305,7 @@ match x:
         singledf = pd.concat([inputClean["TFMag"], single], axis=1)
  
         
-        fig, axs = plt.subplots(2,1, squeeze=False)
+        #fig, axs = plt.subplots(2,1, squeeze=False)
 
         #xdf = pd.concat([singleXdf.assign(Test="Single Estimation"), feedbackXdf.assign(Test="Feedback Estimation")])
         #ydf = pd.concat([singleYdf.assign(Test="Single Estimation"), feedbackYdf.assign(Test="Feedback Estimation")])
@@ -294,56 +315,64 @@ match x:
 
         sns.jointplot(data=singleX, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
         plt.ylabel("Single Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("X Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=feedbackX, x="PFX", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
         plt.ylabel("Feedback Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("X Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=singleY, x="PFY", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
         plt.ylabel("Single Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Y Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=feedbackY, x="PFY", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
         plt.ylabel("Feedback Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Y Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=singleZ, x="PFZ", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
         plt.ylabel("Single Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Z Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=feedbackZ, x="PFZ", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
         plt.ylabel("Feedback Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Z Axis Ground Truth Force (N)")
         plt.show()
 
         sns.jointplot(data=singledf, x="TFMag", y="True Force MAE", kind="kde", fill=True, cmap="Blues")
         plt.ylabel("Single Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Ground Truth Force Magnitude (N)")
         plt.show()
 
         sns.jointplot(data=feedbackdf, x="TFMag", y="True Force MAE", kind="kde", fill=True, cmap="Greens")
         plt.ylabel("Feedback Absolute Error (N)")
-        plt.ylim(0.000, 0.8)
-        #plt.yscale("log")
+        plt.ylim(0.0005, 1)
+        plt.xlim(-0.25,3.25)
+        plt.yscale("log")
         plt.xlabel("Ground Truth Force Magngitude (N)")
         plt.show()
