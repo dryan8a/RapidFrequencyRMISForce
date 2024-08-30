@@ -5,6 +5,7 @@ from tensorflow import metrics
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
+import keras as keras
 import matplotlib.pyplot as plt
 import time
 import csv
